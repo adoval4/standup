@@ -24,7 +24,7 @@ fake = Faker()
 
 class TestTeamListTestCase(CustomAPITestCase):
 	"""
-	Tests /users  operations.
+	Tests /teams  operations.
 	"""
 
 	def setUp(self):
@@ -104,7 +104,7 @@ class TestTeamListTestCase(CustomAPITestCase):
 
 class TestTeamDetailsTestCase(CustomAPITestCase):
 	"""
-	Tests /users/<id> operations.
+	Tests /teams/<id> operations.
 	"""
 
 	def setUp(self):

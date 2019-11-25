@@ -25,6 +25,7 @@ class Common(Configuration):
         # Your apps
         'standup.users',
         'standup.teams',
+        'standup.goals',
 
     )
 

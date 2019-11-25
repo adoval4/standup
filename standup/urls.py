@@ -11,6 +11,7 @@ from rest_framework.routers import DefaultRouter
 # views
 from standup.users.views import UserViewSet, UserCreateViewSet, CustomAuthToken
 from standup.teams.views import TeamViewSet, TeamMemberViewSet
+from standup.goals.views import GoalViewSet
 
 
 router = DefaultRouter()
@@ -22,6 +23,7 @@ router.register(
     TeamMemberViewSet,
     base_name="team_member"
 )
+router.register(r'goals', GoalViewSet, base_name="goal")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
