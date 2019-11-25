@@ -8,6 +8,7 @@ from rest_framework.generics import get_object_or_404
 
 # Models
 from standup.teams.models import Team, Member
+from standup.goals.models import Goal
 
 # Permissions
 from standup.teams.permissions import IsTeamManager, IsTeamCreator
@@ -19,6 +20,7 @@ from standup.teams.serializers import (
 	MemberSerializer,
 	CreateTeamMemberSerializer
 )
+from standup.goals.serializers import GoalSerializer
 
 
 class TeamViewSet(mixins.RetrieveModelMixin,
@@ -65,7 +67,7 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 			status=status.HTTP_201_CREATED
 		)
 
-	def destroy(self, request, pk=None):
+	def destroy(self, request, *args, **kwargs):
 		"""
 		Archives a team
 		"""
@@ -73,6 +75,29 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		team.is_archived = True
 		team.save()
 		return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+	def retrieve(self, request, *args, **kwargs):
+		"""
+		Returns team, members and goals.
+		"""
+		team = self.get_object()
+		data = self.get_serializer(team).data
+		data['members'] = []
+		for member in team.members.filter(is_archived=False).iterator():
+			member_data = MemberSerializer(member).data
+			# get member's pending goals
+			pending_goals = member.goals.filter(
+				is_archived=False
+			).exclude(
+				status=Goal.STATUS_DONE
+			)
+			member_data['goals'] = []
+			for goal in pending_goals.iterator():
+				member_data['goals'].append(
+					GoalSerializer(goal).data
+				)
+			data['members'].append(member_data)
+		return Response(data)
 
 
 class TeamMemberViewSet(viewsets.GenericViewSet):

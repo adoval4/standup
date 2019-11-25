@@ -11,10 +11,12 @@ from rest_framework import status
 
 # models
 from standup.teams.models import Team, Member
+from standup.goals.models import Goal
 
 # factories
-from standup.teams.test.factories import TeamFactory
+from standup.teams.test.factories import TeamFactory, MemberFactory
 from standup.users.test.factories import UserFactory
+from standup.goals.test.factories import GoalFactory
 
 # test utils
 from standup.utils.tests import CustomAPITestCase
@@ -116,6 +118,60 @@ class TestTeamDetailsTestCase(CustomAPITestCase):
 		)
 		self.team.managers.add(self.user)
 		self.url = reverse('team-detail', kwargs={'pk': self.team.id})
+
+		self.member = MemberFactory(team=self.team)
+		self.pending_goal_1 = GoalFactory(
+			member=self.member,
+			created_by=self.user
+		)
+		self.pending_goal_2 = GoalFactory(
+			member=self.member,
+			created_by=self.user,
+			status=Goal.STATUS_NOT_DONE
+		)
+		self.pending_goal_3 = GoalFactory(
+			member=self.member,
+			created_by=self.user,
+			status=Goal.STATUS_IN_PROGRESS
+		)
+		self.done_goal = GoalFactory(
+			member=self.member,
+			created_by=self.user,
+			status=Goal.STATUS_DONE
+		)
+
+	def test_get_request_succeeds(self):
+		response = self.client.get(
+			self.url,
+			**self.auth_header
+		)
+		eq_(response.status_code, status.HTTP_200_OK)
+		team = Team.objects.get(pk=self.team.pk)
+		visible_members = team.members.filter(is_archived=False)
+		eq_(len(response.data.get('members')), visible_members.count())
+		eq_(
+			response.data.get('members')[0].get('id'),
+			str(self.member.pk)
+		)
+		pending_goals = self.member.goals.filter(
+			is_archived=False
+		).exclude(
+			status=Goal.STATUS_DONE
+		)
+		eq_(
+			len(response.data.get('members')[0].get('goals')),
+			pending_goals.count()
+		)
+		for response_goal in response.data.get('members')[0].get('goals'):
+			pending_goal = pending_goals.get(pk=response_goal.get('id'))
+			eq_(
+				response_goal.get('status'),
+				pending_goal.status
+			)
+			eq_(
+				response_goal.get('description'),
+				pending_goal.description
+			)
 
 	def test_put_request_valid_data_succeeds(self):
 		updated_team_data = {
