@@ -38,7 +38,7 @@ class TestUserListTestCase(APITestCase):
         eq_(response.status_code, status.HTTP_201_CREATED)
 
         user = User.objects.get(pk=response.data.get('id'))
-        eq_(user.username, self.user_data.get('username'))
+        eq_(user.email, self.user_data.get('email'))
         ok_(check_password(self.user_data.get('password'), user.password))
 
 
