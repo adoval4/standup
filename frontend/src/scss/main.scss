@@ -1,0 +1,16 @@
+$red-accent: #ff5252;
+
+body, #app {
+  height: 100%;
+  min-height: 100vh;
+  // color: $app-black;
+}
+
+.logo {
+  font-family: 'Montserrat';
+  font-weight: bold;
+}
+
+.full-height {
+  height: 100%;
+}
