@@ -14,3 +14,14 @@ body, #app {
 .full-height {
   height: 100%;
 }
+
+$red-accent: #ff5252;
+
+.md-app {
+  min-height: 100vh;
+  height: 100%;
+}
+
+.md-error {
+  color: $red-accent;
+}
