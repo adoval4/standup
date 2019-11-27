@@ -19,6 +19,9 @@ class Local(Common):
         '--cover-package=standup'
     ]
 
+    # cors white list
+    CORS_ORIGIN_ALLOW_ALL = True
+
     # Mail
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 1025

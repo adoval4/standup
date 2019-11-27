@@ -17,6 +17,7 @@
             <md-card-header>
               <div class="md-title">Login</div>
             </md-card-header>
+
             <md-card-content>
               <md-field >
                 <label for="email">Email</label>
@@ -68,6 +69,8 @@
 </template>
 
 <script>
+import ApiClient from '../services/api_client'
+
 export default {
   name: 'Login',
   data() {
@@ -91,19 +94,33 @@ export default {
     }
   },
   methods: {
-    validateData() {
+    validateData: function() {
       if(!this.validateForm()) {
         return;
       }
 
       this.sending = true;
-      setTimeout(() => {
+
+      let res = ApiClient.auth(
+        this.form.email,
+        this.form.password
+      );
+
+      console.log(res)
+
+      res.then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.log(error);
         this.authError = true;
+      }).finally(() => {
         this.sending = false;
-      }, 2000)
+      });
+
     },
     validateForm() {
       let isValid = true;
+      this.authError = false;
       this.isFormValid = isValid;
       // reset errors
       this.$set(this.form, 'errors', {
