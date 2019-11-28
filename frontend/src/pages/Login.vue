@@ -109,7 +109,8 @@ export default {
       console.log(res)
 
       res.then((response) => {
-        console.log(response);
+        this.$store.commit('setUser', {'user': response.data})
+        this.$router.push({ name: 'home' })
       }).catch((error) => {
         console.log(error);
         this.authError = true;

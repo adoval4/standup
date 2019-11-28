@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 
+// vuex
+import store from './store'
+
 // material
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
@@ -16,5 +19,6 @@ const router = new VueRouter({ routes, mode: 'history' })
 new Vue({
   el: '#app',
   render: h => h(App),
-  router: router
+  router: router,
+  store: store
 })
