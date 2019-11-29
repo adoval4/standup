@@ -25,3 +25,61 @@ $red-accent: #ff5252;
 .md-error {
   color: $red-accent;
 }
+
+$yellow-in-progress: #ffc500;
+$green-done: #2AC940;
+
+.md-radio.md-theme-default.radio-not-done .md-radio-container {
+    border-color: $red-accent;
+    background-color: rgba($red-accent, 0.25);
+    border-color: var(--md-theme-default-accent, $red-accent);
+}
+
+
+.md-radio.radio-in-progress .md-radio-container {
+  border-color: $yellow-in-progress;
+  background-color: rgba($yellow-in-progress, 0.25);
+}
+
+.md-radio.md-theme-default.radio-in-progress.md-checked .md-radio-container {
+  border-color: $yellow-in-progress;
+  background-color: rgba($yellow-in-progress, 0.25);
+}
+
+.md-radio.md-theme-default.radio-in-progress.md-checked .md-radio-container:after {
+    background-color: $yellow-in-progress;
+}
+
+.md-radio.md-theme-default.radio-in-progress.md-checked .md-ripple {
+    color: $yellow-in-progress;
+}
+
+
+.md-radio.radio-done .md-radio-container {
+  border-color: $green-done;
+  background-color: rgba($green-done, 0.25);
+}
+
+.md-radio.md-theme-default.radio-done.md-checked .md-radio-container {
+  border-color: $green-done;
+  background-color: rgba($green-done, 0.25);
+}
+
+.md-radio.md-theme-default.radio-done.md-checked .md-radio-container:after {
+    background-color: $green-done;
+}
+
+.md-radio.md-theme-default.radio-done.md-checked .md-ripple {
+    color: $green-done;
+}
+
+
+.md-radio.md-theme-default.md-disabled .md-radio-container {
+    border-color: rgba(0,0,0,0.0);
+    background-color: rgba(0,0,0,0.15);
+}
+
+
+.text-muted {
+  color: rgba(#000000, 0.3)
+}
