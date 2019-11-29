@@ -6,9 +6,13 @@
       </md-app-toolbar>
 
       <md-app-content >
+        <md-progress-bar
+          md-mode="indeterminate"
+          v-if="!teams"
+        >
+        </md-progress-bar>
 
-
-        <md-list v-if="teams.length > 0">
+        <md-list v-if="teams && teams.length > 0">
 
           <md-subheader>My teams</md-subheader>
 
@@ -27,19 +31,23 @@
           <md-list-item>
             <md-field>
               <label>+ Create a new team</label>
-              <md-input v-model="newTeamName"></md-input>
+              <md-input
+                v-model="newTeamName"
+                @keyup.enter="createNewGroup"
+              ></md-input>
             </md-field>
           </md-list-item>
         </md-list>
 
         <md-empty-state
-          v-if="teams.length == 0"
+          v-if="teams && teams.length == 0"
           md-label="Create your first team"
           md-description="Creating a team, you'll be able to add yout team members and their goals.">
           <md-field>
-            <label>First team name</label>
+            <label>Team name</label>
             <md-input
               v-model="newTeamName"
+              @keyup.enter="createNewGroup"
             ></md-input>
           </md-field>
         </md-empty-state>
@@ -53,27 +61,29 @@ export default {
   data() {
     return {
       newTeamName: null,
-      teams: [],
-      // teams: [
-        // {
-        //   id: '12312asdkasdhasd',
-        //   name: 'Daily'
-        // },
-        // {
-        //   id: '12312asdasdfadasfadkasdhasd',
-        //   name: 'Strategy'
-        // },
-      // ]
     }
+  },
+  created() {
+    // get teams
+    this.$store.dispatch('getTeams');
   },
   computed: {
     user: function() {
       return this.$store.state.user;
+    },
+    teams: function() {
+      return this.$store.state.teams;
     }
   },
   methods: {
     logoutUser: function() {
       this.$store.commit('logoutUser');
+    },
+    createNewGroup: function() {
+      this.$store.dispatch('createTeam', {
+        name: this.newTeamName
+      });
+      this.newTeamName = null;
     }
   }
 }

@@ -8,7 +8,7 @@
 export default {
   name: 'app',
   created(){
-    this.$store.commit('retrieveUserFromLocalStorage');
+    this.$store.commit('getUserFromLocalStorage');
   }
 }
 </script>
