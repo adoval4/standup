@@ -10,92 +10,76 @@
         </span>
       </md-app-toolbar>
 
-      <md-app-content >
+      <md-app-content class="md-scrollbar">
         <md-progress-bar
           md-mode="indeterminate"
           v-if="!team"
         >
         </md-progress-bar>
 
-        <md-card
+        <member-to-do-list
           v-for="member in team.members"
+          :member="member"
           class="member-card"
         >
+        </member-to-do-list>
+
+        <md-card
+          class=""
+        >
+
           <md-card-header>
-            <div class="md-title">{{ member.name }}</div>
-            <div class="md-subhead">{{ member.email }}</div>
+            <div class="md-title">+ New member</div>
+            <!-- <div class="md-subhead">+ New member</div> -->
           </md-card-header>
-
-          <md-card-content>
-            <md-list>
-              <md-list-item
-                v-for="goal in member.goals"
-              >
-                <span>
-                  <span class="progress-radio-btn">
-                    <md-radio
-                      v-model="goal.status"
-                      value="NOT_DONE"
-                      class="radio-not-done"
-                    ></md-radio>
-                    <md-tooltip md-direction="top">Not done</md-tooltip>
-                  </span>
-
-                  <span class="progress-radio-btn">
-                    <md-radio
-                      v-model="goal.status"
-                      value="IN_PROGRESS"
-                      class="radio-in-progress"
-                    ></md-radio>
-                    <md-tooltip md-direction="top">In progress</md-tooltip>
-                  </span>
-
-                  <span class="progress-radio-btn">
-                    <md-radio
-                      v-model="goal.status"
-                      value="DONE"
-                      class="radio-done"
-                    ></md-radio>
-                    <md-tooltip md-direction="top">Done</md-tooltip>
-                  </span>
-
-                </span>
-                <span class="md-list-item-text">{{ goal.description }}</span>
-                <span class="text-muted">Since 2 days</span>
-                <md-button class="md-icon-button">
-                  <md-icon>close</md-icon>
-                </md-button>
-              </md-list-item>
-
-              <md-list-item class="new-goal-list-item">
-                <span>
-                  <span class="progress-radio-btn">
-                    <md-radio disabled></md-radio>
-                  </span>
-
-                  <span class="progress-radio-btn">
-                    <md-radio disabled></md-radio>
-                  </span>
-
-                  <span class="progress-radio-btn">
-                    <md-radio disabled></md-radio>
-                  </span>
-
-                </span>
-                <span class="md-list-item-text">
+          <form novalidate @submit.prevent="validateNewMember">
+            <md-card-content >
+              <div class="md-layout md-gutter">
+                <div class="md-layout-item md-small-size-50">
                   <md-field
-                    class="new-goal-input"
+                    class=""
                     md-inline
                   >
-                    <label>+ New goal for {{ member.name }}</label>
-                    <md-input v-model="member.newGoalDescription"></md-input>
+                    <label>Name</label>
+                    <md-input
+                      name="new-member-name"
+                      id="new-member-name"
+                      v-model="newMember.name"
+                      :disabled="newMember.sending"
+                    ></md-input>
                   </md-field>
-                </span>
-              </md-list-item>
+                </div>
+                <div class="md-layout-item md-small-size-50">
+                  <md-field
+                    class=""
+                    md-inline
+                  >
+                    <label>Email</label>
+                    <md-input
+                      name="new-member-email"
+                      id="new-member-email"
+                      v-model="newMember.email"
+                      :disabled="newMember.sending"
+                    ></md-input>
+                  </md-field>
+                </div>
 
-            </md-list>
-          </md-card-content>
+              </div>
+            </md-card-content>
+
+            <md-card-actions>
+              <md-button
+                type="submit"
+                class="md-primary"
+                :disabled="newMember.sending"
+              >
+                Add
+              </md-button>
+            </md-card-actions>
+          </form>
         </md-card>
+
+
 
       </md-app-content>
     </md-app>
@@ -103,10 +87,19 @@
 </template>
 
 <script>
+import MemberToDoList from '../components/MemberToDoList.vue';
+
 export default {
+  components: {
+    'member-to-do-list': MemberToDoList
+  },
   data: function() {
     return {
-      status: null,
+      newMember: {
+        name: null,
+        email: null,
+        sending: false
+      },
       team: {
         id: 'asdasdqe12e12e21asdsad',
         name: 'Daily',
@@ -153,6 +146,11 @@ export default {
     this.$store.dispatch('getTeam', {
       teamId: this.$route.params.teamId
     });
+  },
+  methods: {
+    validateNewMember() {
+      console.log(this.newMember);
+    }
   }
 }
 </script>
@@ -161,7 +159,8 @@ export default {
 
 .md-card.member-card {
 
-  margin-bottom: 2.0em;
+  margin-top: 1.5em;
+  margin-bottom: 2.5em;
 
   .new-goal-list-item {
 
