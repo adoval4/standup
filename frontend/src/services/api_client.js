@@ -25,8 +25,20 @@ const StandupApiClient = {
   createTeam: function(token, newTeamName) {
     const headers = { 'Authorization': `Token ${token}` };
     return axios.post(teamListUrl, { name: newTeamName }, { headers });
-  }
+  },
 
+  createTeamMember: function(token, teamId, newMemberName, newMemberEmail) {
+    const teamMembersUrl = `${teamListUrl}${teamId}/members/`;
+    const headers = { 'Authorization': `Token ${token}` };
+    const data = {
+      name: newMemberName,
+      email: newMemberEmail
+    }
+    return axios.post(
+      teamMembersUrl,
+      data,
+      { headers });
+  }
 }
 
 export default StandupApiClient;

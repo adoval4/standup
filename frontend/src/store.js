@@ -36,6 +36,10 @@ const store = new Vuex.Store({
       if(!payload.team) { return; }
       state.teams.push(payload.team);
     },
+    addTeamMember (state, payload = {}) {
+      if(!payload.member) { return; }
+      state.team.members.push(payload.member);
+    },
     logoutUser (state) {
       localStorage.removeItem('authenticatedUser');
       state.user = null;
@@ -83,6 +87,27 @@ const store = new Vuex.Store({
       res.then((response) => {
         context.commit('addTeam', {
           team: response.data
+        })
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+    createTeamMember(context, payload = {}) {
+      if(!context.state.user) { return; }
+      if(!context.state.team) { return; }
+      if(!payload.name) { return; }
+      if(!payload.email) { return; }
+
+      const res = ApiClient.createTeamMember(
+        context.state.user.token,
+        context.state.team.id,
+        payload.name,
+        payload.email
+      );
+
+      res.then((response) => {
+        context.commit('addTeamMember', {
+          member: response.data
         })
       }).catch((error) => {
         console.log(error);

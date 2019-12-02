@@ -83,3 +83,10 @@ $green-done: #2AC940;
 .text-muted {
   color: rgba(#000000, 0.3)
 }
+
+.md-field .md-error {
+    display: block;
+    left: 0;
+    opacity: 1;
+    transform: translate3d(0, 0px, 0);
+}

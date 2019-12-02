@@ -10,7 +10,7 @@
         </span>
       </md-app-toolbar>
 
-      <md-app-content class="md-scrollbar">
+      <md-app-content v-if="team" class="md-scrollbar">
         <md-progress-bar
           md-mode="indeterminate"
           v-if="!team"
@@ -18,6 +18,7 @@
         </md-progress-bar>
 
         <member-to-do-list
+
           v-for="member in team.members"
           :member="member"
           class="member-card"
@@ -25,14 +26,18 @@
         </member-to-do-list>
 
         <md-card
-          class=""
+          class="member-card"
         >
-
+          <md-progress-bar
+            v-if="newMember.sending"
+            md-mode="indeterminate"
+          >
+          </md-progress-bar>
           <md-card-header>
-            <div class="md-title">+ New member</div>
-            <!-- <div class="md-subhead">+ New member</div> -->
+            <div v-if="team.members.length > 0" class="md-title">+ New member</div>
+            <div v-if="team.members.length == 0" class="md-title">+ Add first member</div>
           </md-card-header>
-          <form novalidate @submit.prevent="validateNewMember">
+          <form novalidate @submit.prevent="createNewMember">
             <md-card-content >
               <div class="md-layout md-gutter">
                 <div class="md-layout-item md-small-size-50">
@@ -47,6 +52,9 @@
                       v-model="newMember.name"
                       :disabled="newMember.sending"
                     ></md-input>
+                    <span class="md-error " v-if="newMember.errors.name.empty">
+                      Name is required
+                    </span>
                   </md-field>
                 </div>
                 <div class="md-layout-item md-small-size-50">
@@ -61,9 +69,17 @@
                       v-model="newMember.email"
                       :disabled="newMember.sending"
                     ></md-input>
+                    <span class="md-error " v-if="newMember.errors.email.empty">
+                      Email is required
+                    </span>
+                    <span class="md-error " v-if="newMember.errors.email.invalid">
+                      Email provided is invalid
+                    </span>
+                    <span class="md-error " v-if="newMember.errors.email.existing">
+                      Email is already registered on this team
+                    </span>
                   </md-field>
                 </div>
-
               </div>
             </md-card-content>
 
@@ -78,8 +94,6 @@
             </md-card-actions>
           </form>
         </md-card>
-
-
 
       </md-app-content>
     </md-app>
@@ -98,58 +112,77 @@ export default {
       newMember: {
         name: null,
         email: null,
-        sending: false
-      },
-      team: {
-        id: 'asdasdqe12e12e21asdsad',
-        name: 'Daily',
-        members: [
-          {
-            id: 'asdadsadsadsad',
-            name: 'Pedro',
-            email: 'p@sapasd.com',
-            goals: [
-              {
-                id: 'asdadekd9293123',
-                description: 'Get task 1 done',
-                status: null
-              },
-              {
-                id: 'asdadekd9293123',
-                description: 'Get task 1 done',
-                status: 'DONE'
-              },
-            ]
+        sending: false,
+        errors: {
+          email: {
+            empty: false,
+            invalid: false,
+            existing: false
           },
-          {
-            id: 'asdadsadsasdaddsad',
-            name: 'Pedro 2',
-            email: 'p2@sapasd.com',
-            goals: [
-              {
-                id: 'asdadekd9293123',
-                description: 'Get task 1 done',
-                status: null
-              }
-            ]
+          name: {
+            empty: false,
           },
-        ]
+        }
       }
     }
   },
-  // computed: {
-  //   team() {
-  //     return this.$store.state.team;
-  //   }
-  // },
+  computed: {
+    team() {
+      return this.$store.state.team;
+    }
+  },
   created() {
     this.$store.dispatch('getTeam', {
       teamId: this.$route.params.teamId
     });
   },
   methods: {
+    createNewMember() {
+      if(!this.validateNewMember()) { return; }
+
+      this.$set(this.newMember, 'sending', true);
+
+      this.$store.dispatch('createTeamMember', {
+        name: this.newMember.name,
+        email: this.newMember.email
+      });
+
+      this.$set(this.newMember, 'name', null);
+      this.$set(this.newMember, 'email', null);
+      this.$set(this.newMember, 'sending', false);
+    },
     validateNewMember() {
-      console.log(this.newMember);
+      let isValid = true;
+      this.$set(this.newMember, 'errors', {
+        email: {
+          empty: false,
+          invalid: false,
+          existing: false
+        },
+        name: {
+          empty: false,
+        },
+      });
+
+      if(!this.newMember.email) {
+        this.$set(this.newMember.errors.email, 'empty', true);
+        isValid = false;
+      }
+      else if(!this.isValidEmail(this.newMember.email)) {
+        this.$set(this.newMember.errors.email, 'invalid', true);
+        isValid = false;
+      }
+
+      if(!this.newMember.name) {
+        this.$set(this.newMember.errors.name, 'empty', true);
+        isValid = false;
+      }
+
+      return isValid;
+    },
+    isValidEmail: function (email) {
+      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     }
   }
 }
