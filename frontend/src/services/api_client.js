@@ -53,11 +53,20 @@ const StandupApiClient = {
 
   updateGoalStatus: function(token, goalId, status) {
     const goalDetailUrl = `${goalsListUrl}${goalId}/`;
-    const data = {
-      status: status,
-    };
+    const data = { status };
     return axios.patch(goalDetailUrl, data, this.getOptions(token));
-  }
+  },
+
+  updateGoalDescription: function(token, goalId, description) {
+    const goalDetailUrl = `${goalsListUrl}${goalId}/`;
+    const data = { description };
+    return axios.patch(goalDetailUrl, data, this.getOptions(token));
+  },
+
+  deleteGoal: function(token, goalId) {
+    const goalDetailUrl = `${goalsListUrl}${goalId}/`;
+    return axios.delete(goalDetailUrl, this.getOptions(token));
+  },
 }
 
 export default StandupApiClient;

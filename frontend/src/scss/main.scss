@@ -41,16 +41,16 @@ $green-done: #2AC940;
   background-color: rgba($yellow-in-progress, 0.25);
 }
 
-.md-radio.md-theme-default.radio-in-progress.md-checked .md-radio-container {
+.md-radio.md-theme-default.radio-in-progress.md-checked:not(.md-disabled) .md-radio-container {
   border-color: $yellow-in-progress;
   background-color: rgba($yellow-in-progress, 0.25);
 }
 
-.md-radio.md-theme-default.radio-in-progress.md-checked .md-radio-container:after {
+.md-radio.md-theme-default.radio-in-progress.md-checked:not(.md-disabled) .md-radio-container:after {
     background-color: $yellow-in-progress;
 }
 
-.md-radio.md-theme-default.radio-in-progress.md-checked .md-ripple {
+.md-radio.md-theme-default.radio-in-progress.md-checked:not(.md-disabled) .md-ripple {
     color: $yellow-in-progress;
 }
 
@@ -60,16 +60,16 @@ $green-done: #2AC940;
   background-color: rgba($green-done, 0.25);
 }
 
-.md-radio.md-theme-default.radio-done.md-checked .md-radio-container {
+.md-radio.md-theme-default.radio-done.md-checked:not(.md-disabled) .md-radio-container {
   border-color: $green-done;
   background-color: rgba($green-done, 0.25);
 }
 
-.md-radio.md-theme-default.radio-done.md-checked .md-radio-container:after {
+.md-radio.md-theme-default.radio-done.md-checked:not(.md-disabled) .md-radio-container:after {
     background-color: $green-done;
 }
 
-.md-radio.md-theme-default.radio-done.md-checked .md-ripple {
+.md-radio.md-theme-default.radio-done.md-checked:not(.md-disabled) .md-ripple {
     color: $green-done;
 }
 
@@ -90,3 +90,6 @@ $green-done: #2AC940;
     opacity: 1;
     transform: translate3d(0, 0px, 0);
 }
+
+
+

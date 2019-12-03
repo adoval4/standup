@@ -18,15 +18,15 @@
         </md-progress-bar>
 
         <member-to-do-list
-
           v-for="member in team.members"
           :member="member"
+          :key="member.id"
           class="member-card"
         >
         </member-to-do-list>
 
         <md-card
-          class="member-card"
+          class="member-card new-member-card"
         >
           <md-progress-bar
             v-if="newMember.sending"
@@ -102,6 +102,7 @@
 
 <script>
 import MemberToDoList from '../components/MemberToDoList.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -126,11 +127,7 @@ export default {
       }
     }
   },
-  computed: {
-    team() {
-      return this.$store.state.team;
-    }
-  },
+  computed: mapState(['team']),
   created() {
     this.$store.dispatch('getTeam', {
       teamId: this.$route.params.teamId
@@ -193,6 +190,12 @@ export default {
 .new-memeber-form-ctn {
   margin-right: 15px;
   margin-left: 20px;
+}
+
+.md-card.member-card.new-member-card {
+  margin-top: 1.5em;
+  margin-bottom: 2.5em;
+  padding-bottom: 1.5em;
 }
 
 </style>

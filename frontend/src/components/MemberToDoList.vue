@@ -17,8 +17,9 @@
       <md-list>
         <goal-item
           v-for="goal in member.goals"
-          :goal="goal"
+          :goalId="goal.id"
           :memberId="member.id"
+          :key="goal.id"
         >
         </goal-item>
 
@@ -98,7 +99,6 @@ export default {
 
   margin-top: 1.5em;
   margin-bottom: 2.5em;
-
 }
 
 .progress-radio-btn {
