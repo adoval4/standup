@@ -2,6 +2,12 @@
   <md-card
     class="member-card"
   >
+    <md-progress-bar
+      v-if="newGoal.sending"
+      md-mode="indeterminate"
+    >
+    </md-progress-bar>
+
     <md-card-header>
       <div class="md-title">{{ member.name }}</div>
       <div class="md-subhead">{{ member.email }}</div>
@@ -9,44 +15,12 @@
 
     <md-card-content >
       <md-list>
-        <md-list-item
+        <goal-item
           v-for="goal in member.goals"
+          :goal="goal"
+          :memberId="member.id"
         >
-          <span>
-            <span class="progress-radio-btn">
-              <md-radio
-                v-model="goal.status"
-                value="NOT_DONE"
-                class="radio-not-done"
-              ></md-radio>
-              <md-tooltip md-direction="top">Not done</md-tooltip>
-            </span>
-
-            <span class="progress-radio-btn">
-              <md-radio
-                v-model="goal.status"
-                value="IN_PROGRESS"
-                class="radio-in-progress"
-              ></md-radio>
-              <md-tooltip md-direction="top">In progress</md-tooltip>
-            </span>
-
-            <span class="progress-radio-btn">
-              <md-radio
-                v-model="goal.status"
-                value="DONE"
-                class="radio-done"
-              ></md-radio>
-              <md-tooltip md-direction="top">Done</md-tooltip>
-            </span>
-
-          </span>
-          <span class="md-list-item-text">{{ goal.description }}</span>
-          <span class="text-muted">Since 2 days</span>
-          <md-button class="md-icon-button">
-            <md-icon>close</md-icon>
-          </md-button>
-        </md-list-item>
+        </goal-item>
 
         <md-list-item class="new-goal-list-item">
           <span>
@@ -69,7 +43,11 @@
               md-inline
             >
               <label>+ New goal for {{ member.name }}</label>
-              <md-input v-model="member.newGoalDescription"></md-input>
+              <md-input
+                v-model="newGoal.description"
+                :disabled="newGoal.sending"
+                @keyup.enter="createNewGoal"
+              ></md-input>
             </md-field>
           </span>
         </md-list-item>
@@ -81,12 +59,75 @@
 </template>
 
 <script>
+import GoalItem from './GoalItem.vue'
+
 export default {
+  components: {
+    'goal-item': GoalItem
+  },
   props: [
     'member'
-  ]
+  ],
+  data() {
+    return {
+      newGoal: {
+        description: null,
+        sending: false
+      }
+    }
+  },
+  methods: {
+    createNewGoal() {
+      this.$set(this.newGoal, 'sending', true);
+
+      this.$store.dispatch('createNewMemberGoal', {
+        memberId: this.member.id,
+        description: this.newGoal.description
+      });
+
+      this.$set(this.newGoal, 'description', null);
+      this.$set(this.newGoal, 'sending', false);
+    }
+  }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
+
+.md-card.member-card {
+
+  margin-top: 1.5em;
+  margin-bottom: 2.5em;
+
+}
+
+.progress-radio-btn {
+
+  margin-right: 8px;
+
+  .md-radio {
+    margin-right: 0px;
+  }
+
+  .md-tooltip.md-top {
+    margin-left: -5px;
+  }
+}
+
+.new-goal-list-item {
+
+  .new-goal-input {
+    position: relative;
+    top: -10px;
+    margin-left: 10px !important;
+    max-width: calc(100% - 30px);
+  }
+
+  .md-radio.md-theme-default.md-disabled .md-radio-container {
+      border-color: rgba(0,0,0,0.26);
+      background-color: rgba(0,0,0,0.26);
+  }
+}
+
+
 </style>

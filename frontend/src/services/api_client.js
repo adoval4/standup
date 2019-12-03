@@ -3,6 +3,7 @@ import axios from 'axios';
 const baseUrl = "//localhost:8000";
 const apiBaseUrl = `${baseUrl}/api/v1`;
 const teamListUrl = `${apiBaseUrl}/teams/`;
+const goalsListUrl = `${apiBaseUrl}/goals/`;
 
 const StandupApiClient = {
 
@@ -11,33 +12,51 @@ const StandupApiClient = {
     return axios.post(authUrl, {username: email, password: password})
   },
 
+  getOptions: function(token) {
+    return { headers: { 'Authorization': `Token ${token}` } };
+  },
+
   getTeams: function(token) {
-    const headers = { 'Authorization': `Token ${token}` };
-    return axios.get(teamListUrl, { headers });
+    return axios.get(teamListUrl, this.getOptions(token));
   },
 
   retrieveTeam: function(token, teamId) {
     const teamDetailUrl = `${teamListUrl}${teamId}/`;
-    const headers = { 'Authorization': `Token ${token}` };
-    return axios.get(teamDetailUrl, { headers });
+    return axios.get(teamDetailUrl, this.getOptions(token));
   },
 
   createTeam: function(token, newTeamName) {
-    const headers = { 'Authorization': `Token ${token}` };
-    return axios.post(teamListUrl, { name: newTeamName }, { headers });
+    const data = { name: newTeamName }
+    return axios.post(
+      teamListUrl,
+      data,
+      this.getOptions(token)
+    );
   },
 
   createTeamMember: function(token, teamId, newMemberName, newMemberEmail) {
     const teamMembersUrl = `${teamListUrl}${teamId}/members/`;
-    const headers = { 'Authorization': `Token ${token}` };
     const data = {
       name: newMemberName,
       email: newMemberEmail
     }
-    return axios.post(
-      teamMembersUrl,
-      data,
-      { headers });
+    return axios.post(teamMembersUrl, data, this.getOptions(token));
+  },
+
+  createMemberGoal: function(token, memberId, newGoalDescription) {
+    const data = {
+      member: memberId,
+      description: newGoalDescription
+    }
+    return axios.post(goalsListUrl, data, this.getOptions(token));
+  },
+
+  updateGoalStatus: function(token, goalId, status) {
+    const goalDetailUrl = `${goalsListUrl}${goalId}/`;
+    const data = {
+      status: status,
+    };
+    return axios.patch(goalDetailUrl, data, this.getOptions(token));
   }
 }
 

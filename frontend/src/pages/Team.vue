@@ -38,7 +38,7 @@
             <div v-if="team.members.length == 0" class="md-title">+ Add first member</div>
           </md-card-header>
           <form novalidate @submit.prevent="createNewMember">
-            <md-card-content >
+            <md-card-content class="new-memeber-form-ctn" >
               <div class="md-layout md-gutter">
                 <div class="md-layout-item md-small-size-50">
                   <md-field
@@ -190,42 +190,9 @@ export default {
 
 <style lang="scss" scoped>
 
-.md-card.member-card {
-
-  margin-top: 1.5em;
-  margin-bottom: 2.5em;
-
-  .new-goal-list-item {
-
-    .new-goal-input {
-      position: relative;
-      top: -10px;
-      margin-left: 0px !important;
-      max-width: calc(100% - 20px);
-    }
-
-    .md-radio.md-theme-default.md-disabled .md-radio-container {
-        border-color: rgba(0,0,0,0.26);
-        background-color: rgba(0,0,0,0.26);
-    }
-  }
-
-  .md-list-item-text {
-    margin-left: 10px !important;
-  }
-}
-
-.progress-radio-btn {
-
-  margin-right: 8px;
-
-  .md-radio {
-    margin-right: 0px;
-  }
-
-  .md-tooltip.md-top {
-    margin-left: -5px;
-  }
+.new-memeber-form-ctn {
+  margin-right: 15px;
+  margin-left: 20px;
 }
 
 </style>

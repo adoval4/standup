@@ -18,7 +18,7 @@ class Goal(CustomUserCreatedBaseModel):
 	"""
 	STATUS_DONE = "DONE"
 	STATUS_IN_PROGRESS = "IN_PROGRESS"
-	STATUS_NOT_DONE = "IN_PROGRESS"
+	STATUS_NOT_DONE = "NOT_DONE"
 
 	STATUSES = (
 		(STATUS_DONE, 'Done'),
