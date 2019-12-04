@@ -65,6 +65,7 @@ const store = new Vuex.Store({
 
     addTeamMember(state, payload = {}) {
       if(!payload.member) { return; }
+      payload.member.goals = [];
       state.team.members.push(payload.member);
     },
 
@@ -113,6 +114,17 @@ const store = new Vuex.Store({
               break;
             }
           }
+          break;
+        }
+      }
+    },
+
+    removeTeamMember(state, payload = {}) {
+      if(!payload.memberId) { return; }
+
+      for(let i=0; state.team.members.length; i++) {
+        if(state.team.members[i].id == payload.memberId) {
+          state.team.members.splice(i, 1);
           break;
         }
       }
@@ -286,6 +298,27 @@ const store = new Vuex.Store({
         context.commit('updateGoal', {
           memberId: payload.memberId,
           goal: response.data
+        })
+        context.commit('mapTeamMembersAndGoals')
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+
+    deleteMember(context, payload = {}) {
+      if(!context.state.user) { return; }
+      if(!context.state.team) { return; }
+      if(!payload.memberId) { return; }
+
+      const res = ApiClient.deleteMember(
+        context.state.user.token,
+        context.state.team.id,
+        payload.memberId
+      );
+
+      res.then((response) => {
+        context.commit('removeTeamMember', {
+          memberId: payload.memberId
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {

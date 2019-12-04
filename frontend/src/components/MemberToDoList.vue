@@ -1,61 +1,86 @@
 <template lang="html">
-  <md-card
-    class="member-card"
-  >
-    <md-progress-bar
-      v-if="newGoal.sending"
-      md-mode="indeterminate"
+  <div class="">
+
+    <md-card
+      class="member-card"
     >
-    </md-progress-bar>
+      <md-progress-bar
+        v-if="newGoal.sending"
+        md-mode="indeterminate"
+      >
+      </md-progress-bar>
 
-    <md-card-header>
-      <div class="md-title">{{ member.name }}</div>
-      <div class="md-subhead">{{ member.email }}</div>
-    </md-card-header>
+      <div class="md-layout">
+        <md-card-header class="md-layout-item">
+          <div class="md-title">{{ member.name }}</div>
+          <div class="md-subhead">{{ member.email }}</div>
+        </md-card-header>
 
-    <md-card-content >
-      <md-list>
-        <goal-item
-          v-for="goal in member.goals"
-          :goalId="goal.id"
-          :memberId="member.id"
-          :key="goal.id"
-        >
-        </goal-item>
+        <md-card-actions class="md-layout-item">
+          <md-button
+            class="md-icon-button"
+            @click="showDeleteConfirmation = true"
+          >
+            <md-icon>delete</md-icon>
+          </md-button>
+        </md-card-actions>
+      </div>
 
-        <md-list-item class="new-goal-list-item">
-          <span>
-            <span class="progress-radio-btn">
-              <md-radio disabled></md-radio>
+      <md-card-content >
+        <md-list>
+          <goal-item
+            v-for="goal in member.goals"
+            :goalId="goal.id"
+            :memberId="member.id"
+            :key="goal.id"
+          >
+          </goal-item>
+
+          <md-list-item class="new-goal-list-item">
+            <span>
+              <span class="progress-radio-btn">
+                <md-radio disabled></md-radio>
+              </span>
+
+              <span class="progress-radio-btn">
+                <md-radio disabled></md-radio>
+              </span>
+
+              <span class="progress-radio-btn">
+                <md-radio disabled></md-radio>
+              </span>
+
             </span>
-
-            <span class="progress-radio-btn">
-              <md-radio disabled></md-radio>
+            <span class="md-list-item-text">
+              <md-field
+                class="new-goal-input"
+                md-inline
+              >
+                <label>+ New goal for {{ member.name }}</label>
+                <md-input
+                  v-model="newGoal.description"
+                  :disabled="newGoal.sending"
+                  @keyup.enter="createNewGoal"
+                ></md-input>
+              </md-field>
             </span>
+          </md-list-item>
 
-            <span class="progress-radio-btn">
-              <md-radio disabled></md-radio>
-            </span>
+        </md-list>
+      </md-card-content>
+    </md-card>
 
-          </span>
-          <span class="md-list-item-text">
-            <md-field
-              class="new-goal-input"
-              md-inline
-            >
-              <label>+ New goal for {{ member.name }}</label>
-              <md-input
-                v-model="newGoal.description"
-                :disabled="newGoal.sending"
-                @keyup.enter="createNewGoal"
-              ></md-input>
-            </md-field>
-          </span>
-        </md-list-item>
+    <md-dialog-confirm
+      :md-active.sync="showDeleteConfirmation"
+      md-title="Are you sure?"
+      :md-content="`Please confirm you want to remove ${this.member.name} from this team.`"
+      md-confirm-text="Cancel"
+      md-cancel-text="Delete"
+      @md-cancel="deleteMember"
+      @md-confirm="showDeleteConfirmation = false"
+    />
 
-      </md-list>
-    </md-card-content>
-  </md-card>
+  </div>
 
 </template>
 
@@ -74,7 +99,8 @@ export default {
       newGoal: {
         description: null,
         sending: false
-      }
+      },
+      showDeleteConfirmation: false,
     }
   },
   methods: {
@@ -88,6 +114,11 @@ export default {
 
       this.$set(this.newGoal, 'description', null);
       this.$set(this.newGoal, 'sending', false);
+    },
+    deleteMember() {
+      this.$store.dispatch('deleteMember', {
+        memberId: this.member.id
+      });
     }
   }
 }

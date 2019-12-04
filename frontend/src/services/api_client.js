@@ -67,6 +67,11 @@ const StandupApiClient = {
     const goalDetailUrl = `${goalsListUrl}${goalId}/`;
     return axios.delete(goalDetailUrl, this.getOptions(token));
   },
+
+  deleteMember: function(token, teamId, memberId) {
+    const teamMemberDetailUrl = `${teamListUrl}${teamId}/members/${memberId}/`;
+    return axios.delete(teamMemberDetailUrl, this.getOptions(token));
+  },
 }
 
 export default StandupApiClient;
