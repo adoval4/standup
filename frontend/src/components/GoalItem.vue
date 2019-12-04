@@ -101,7 +101,9 @@ export default {
         return 'No date'
       }
       let now = moment();
-      let days_passed = now.diff(moment(this.goal.created), 'days');
+      let created = moment(this.goal.created);
+      let created_date = moment(created.format("YYYY-MM-DD"));
+      let days_passed = now.diff(created_date, 'days');
       if(days_passed == 0) {
         return 'Since today'
       }
