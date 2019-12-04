@@ -14,8 +14,8 @@ const store = new Vuex.Store({
       user: null,
       teams: null,
       team: null,
-      members: null,
-      goals: null
+      members: {},
+      goals: {}
     }
   },
   mutations: {
@@ -50,9 +50,11 @@ const store = new Vuex.Store({
       state.team.members.map((member) => {
         state.members[member.id] = member;
 
-        member.goals.map((goal) => {
-          state.goals[goal.id] = goal;
-        })
+        if(member.goals) {
+          member.goals.map((goal) => {
+            state.goals[goal.id] = goal;
+          })
+        }
       })
     },
 
@@ -77,7 +79,7 @@ const store = new Vuex.Store({
         }
       }
 
-      state.goals[goal.id] = goal;
+      state.goals[payload.goal.id] = payload.goal;
     },
 
     updateGoal(state, payload = {}) {
