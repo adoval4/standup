@@ -18,7 +18,8 @@ from standup.teams.serializers import (
 	TeamSerializer,
 	CreateTeamSerializer,
 	MemberSerializer,
-	CreateTeamMemberSerializer
+	CreateTeamMemberSerializer,
+	TeamSettingsSerializer
 )
 from standup.goals.serializers import GoalSerializer
 
@@ -82,6 +83,7 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		"""
 		team = self.get_object()
 		data = self.get_serializer(team).data
+		data['settings'] = TeamSettingsSerializer(team.settings).data
 		data['members'] = []
 		for member in team.members.filter(is_archived=False).iterator():
 			member_data = MemberSerializer(member).data

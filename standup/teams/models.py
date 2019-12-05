@@ -6,6 +6,8 @@ import jwt
 from django.db import models
 from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 # Models
 from standup.utils.models import CustomUserCreatedBaseModel
@@ -29,10 +31,49 @@ class Team(CustomUserCreatedBaseModel):
 	is_archived = models.BooleanField(default=False)
 
 	def __str__(self):
-		return u'Team {} of {} (id={})'.format(
+		return u'Team "{}" of {} (id={})'.format(
 			self.name,
 			self.created_by,
 			self.id
+		)
+
+
+@python_2_unicode_compatible
+class TeamSettings(CustomUserCreatedBaseModel):
+	"""Team model.
+
+	Represents a work team.
+	"""
+	EMAIL = 'EMAIL'
+	SLACK = 'SLACK'
+
+	CALL_METHOD = (
+		(EMAIL, 'Email'),
+		(SLACK, 'Slack')
+	)
+
+	team = models.OneToOneField(
+		'teams.Team',
+		on_delete=models.CASCADE,
+		related_name='settings'
+	)
+	meeting_link = models.URLField(null=True, blank=True, default=None)
+	meeting_duration_mins = models.PositiveSmallIntegerField(
+		default=10,
+		blank=True
+	)
+	slack_webhook = models.URLField(null=True, blank=True, default=None)
+	call_team_method = models.CharField(
+		max_length=10,
+		choices=CALL_METHOD,
+		default=EMAIL
+	)
+
+	def __str__(self):
+		return u'Team "{}" settings of {} (id={})'.format(
+			self.team.name,
+			self.team.created_by,
+			self.team.id
 		)
 
 
@@ -100,3 +141,9 @@ class Member(CustomUserCreatedBaseModel):
 			return None
 		except KeyError:
 			return None
+
+
+@receiver(post_save, sender=Team)
+def create_team_settings(sender, instance=None, created=False, **kwargs):
+	if created:
+		TeamSettings.objects.create(team=instance)

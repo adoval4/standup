@@ -45,6 +45,7 @@ class CustomUserCreatedBaseModel(CustomBaseModel):
         'users.User',
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         default=None
     )
 

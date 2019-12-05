@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 # Models
-from standup.teams.models import Team, Member
+from standup.teams.models import Team, Member, TeamSettings
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -46,6 +46,14 @@ class CreateTeamSerializer(serializers.Serializer):
         team = Team.objects.create(**validated_data)
         team.managers.add(user)
         return team
+
+
+class TeamSettingsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TeamSettings
+        exclude = ('created_by', 'created', 'team')
+        read_only_fields = ('team', )
 
 
 class MemberSerializer(serializers.ModelSerializer):
