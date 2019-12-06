@@ -10,7 +10,7 @@ from faker import Faker
 from rest_framework import status
 
 # models
-from standup.teams.models import Team, Member
+from standup.teams.models import Team, Member, TeamSettings
 from standup.goals.models import Goal
 
 # factories
@@ -26,7 +26,7 @@ fake = Faker()
 
 class TestTeamListTestCase(CustomAPITestCase):
 	"""
-	Tests /teams  operations.
+	Tests /teams/  operations.
 	"""
 
 	def setUp(self):
@@ -106,7 +106,7 @@ class TestTeamListTestCase(CustomAPITestCase):
 
 class TestTeamDetailsTestCase(CustomAPITestCase):
 	"""
-	Tests /teams/<id> operations.
+	Tests /teams/<id>/ operations.
 	"""
 
 	def setUp(self):
@@ -198,7 +198,7 @@ class TestTeamDetailsTestCase(CustomAPITestCase):
 
 class TestTeamMemberListTestCase(CustomAPITestCase):
 	"""
-	Tests /teams/<id>/members  operations.
+	Tests /teams/<id>/members/  operations.
 	"""
 
 	def setUp(self):
@@ -272,3 +272,55 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 		member = Member.objects.get(pk=self.member.pk)
 		eq_(member.is_archived, True)
 
+
+class TestTeamSettingsTestCase(CustomAPITestCase):
+	"""
+	Tests /teams/<id>/setup/  operations.
+	"""
+	def setUp(self):
+		super().setUp()
+
+		self.team = TeamFactory(
+			name="the team",
+			created_by=self.user
+		)
+		self.team.managers.add(self.user)
+		self.url = reverse('team-setup', kwargs={'pk': self.team.id})
+
+		self.new_settings_data = {
+			'meeting_link': 'https://meet.google.com/xxxxxxxx',
+			'slack_webhook': 'https://hooks.slack.com/services/ashsadhdahads',
+			'meeting_duration_mins': 20,
+			'call_team_method': 'SLACK',
+		}
+
+		self.invalid_data = {
+			'meeting_link': 'xxxxx',
+			'slack_webhook': None,
+			'meeting_duration_mins': 'asdasd',
+			'call_team_method': 'xxx',
+		}
+
+	def test_put_request_with_valid_data_succeeds(self):
+		response = self.client.put(
+			self.url, self.new_settings_data, **self.auth_header
+		)
+		eq_(response.status_code, status.HTTP_200_OK)
+
+		team_settings = TeamSettings.objects.get(team=self.team)
+		eq_(team_settings.meeting_link, self.new_settings_data.get('meeting_link'))
+		eq_(
+			team_settings.call_team_method,
+			self.new_settings_data.get('call_team_method')
+		)
+		eq_(
+			team_settings.meeting_duration_mins,
+			self.new_settings_data.get('meeting_duration_mins')
+		)
+		eq_(team_settings.slack_webhook, self.new_settings_data.get('slack_webhook'))
+
+	def test_put_request_with_invalid_data_fails(self):
+		response = self.client.put(
+			self.url, self.invalid_data, **self.auth_header
+		)
+		eq_(response.status_code, status.HTTP_400_BAD_REQUEST)

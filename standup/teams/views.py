@@ -101,6 +101,17 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 			data['members'].append(member_data)
 		return Response(data)
 
+	@action(detail=True, methods=['put'])
+	def setup(self, request, *args, **kwargs):
+		"""
+		Updates team settings
+		"""
+		team = self.get_object()
+		serializer = TeamSettingsSerializer(team.settings, data=request.data)
+		serializer.is_valid(raise_exception=True)
+		serializer.save()
+		return Response(serializer.data)
+
 
 class TeamMemberViewSet(viewsets.GenericViewSet):
 	"""
