@@ -8,7 +8,7 @@
         <span v-if="team" class="md-title logo" style="flex: 1">
           Standup - {{ team.name }}
         </span>
-        <md-button>Call</md-button>
+        <md-button v-if="team">Call</md-button>
         <md-button
           v-if="team"
           :to="{ name: 'teamSettings', payload:{ teamId: this.team.id } }"

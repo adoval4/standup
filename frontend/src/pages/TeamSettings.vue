@@ -15,8 +15,10 @@
       </md-app-toolbar>
       <md-app-content v-if="teamSettings" class="md-scrollbar">
 
-        <form novalidate class="md-layout" @submit.prevent="validateSettings">
+        <form novalidate class="md-layout" @submit.prevent="updateSettings">
           <md-card class="md-layout-item md-size-50 md-small-size-100">
+            <md-progress-bar md-mode="indeterminate" v-if="sending" />
+
             <md-card-header>
               <div class="md-title">Team meeting settings</div>
             </md-card-header>
