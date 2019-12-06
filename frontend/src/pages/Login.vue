@@ -106,8 +106,6 @@ export default {
         this.form.password
       );
 
-      console.log(res)
-
       res.then((response) => {
         this.$store.commit('setUser', {'user': response.data})
         this.$router.push({ name: 'home' })
@@ -117,7 +115,6 @@ export default {
       }).finally(() => {
         this.sending = false;
       });
-
     },
     validateForm() {
       let isValid = true;

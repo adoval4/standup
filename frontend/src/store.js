@@ -150,6 +150,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     getTeam(context, payload = {}) {
@@ -168,6 +170,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     createTeam(context, payload = {}) {
@@ -186,6 +190,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     createTeamMember(context, payload = {}) {
@@ -209,6 +215,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     createNewMemberGoal(context, payload = {}) {
@@ -232,6 +240,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     updateGoalStatus(context, payload = {}) {
@@ -256,6 +266,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     deleteGoal(context, payload = {}) {
@@ -279,6 +291,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     updateGoalDescription(context, payload = {}) {
@@ -303,6 +317,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
 
     deleteMember(context, payload = {}) {
@@ -324,6 +340,8 @@ const store = new Vuex.Store({
       }).catch((error) => {
         console.log(error);
       });
+
+      return res;
     },
   }
 });

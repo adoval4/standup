@@ -29,9 +29,13 @@
                   v-model="teamSettings.meeting_duration_mins"
                   :disabled="sending"
                   :required="true"
+                  type="number"
                 />
+                <span class="md-error " v-if="errors.meeting_duration_mins.empty">
+                  This is required.
+                </span>
                 <span class="md-error " v-if="errors.meeting_duration_mins.invalid">
-                  Value is invalid. It should be an integer. Example: 13
+                  Value is invalid. It should be an integer. Example: 13.
                 </span>
               </md-field>
 
@@ -44,10 +48,10 @@
                 <span class="md-helper-text">
                   Video call where the meeting will be held. Whenever you call your team, a tab with this url will be open.
                 </span>
-                <span class="md-error " v-if="errors.meeting_link.invalid">
-                  Invalid url
-                </span>
               </md-field>
+              <span class="md-error " v-if="errors.meeting_link.invalid">
+                Invalid url
+              </span>
 
               <div class="radio-field">
                 <span class="label">Call team by:</span>
@@ -77,10 +81,13 @@
                   Slack incoming webhook allow you to send messages to a specific Slack channel.
                   <a href="https://api.slack.com/messaging/webhooks">See more</a>
                 </span>
-                <span class="md-error " v-if="errors.slack_webhook.invalid">
-                  Invalid url. Url should be start with https://hooks.slack.com/
-                </span>
               </md-field>
+              <span class="md-error " v-if="errors.slack_webhook.empty">
+                If you are gonna be using slack to call your team, this is required.
+              </span>
+              <span class="md-error " v-if="errors.slack_webhook.invalid">
+                Invalid url. A valid url should start with "https://hooks.slack.com/".
+              </span>
 
             </md-card-content>
 
@@ -100,6 +107,8 @@
 <script>
 import { mapState } from 'vuex';
 
+const SLACK_WEBHOOK_ROOT = '//hooks.slack.com/';
+
 export default {
   data: function() {
     return {
@@ -109,7 +118,8 @@ export default {
           invalid: false
         },
         meeting_duration_mins: {
-          invalid: false
+          invalid: false,
+          empty: false
         },
         slack_webhook: {
           invalid: false
@@ -119,18 +129,92 @@ export default {
     }
   },
   computed: mapState(['team']),
-  created() {
-    const res = this.$store.dispatch('getTeam', {
-      teamId: this.$route.params.teamId
-    });
-
-    res.then(() => {
-      this.teamSettings = this.team.settings
-    })
+  mounted() {
+    if(!this.team){
+      const res = this.$store.dispatch('getTeam', {
+        teamId: this.$route.params.teamId
+      });
+      res.finally(() => { this.teamSettings = this.team.settings; })
+    } else {
+      this.teamSettings = this.team.settings;
+    }
   },
   methods: {
     validateSettings() {
-      console.log(this.settings);
+      let isValid = true;
+      if(!this.teamSettings) { return false }
+
+      this.errors = {
+        meeting_link: {
+          invalid: false
+        },
+        meeting_duration_mins: {
+          invalid: false,
+          empty: false
+        },
+        slack_webhook: {
+          empty: false,
+          invalid: false,
+        }
+      };
+
+      if(!this.teamSettings.meeting_duration_mins) {
+        this.$set(this.errors.meeting_duration_mins, 'empty', true)
+        isValid = false;
+      }
+      else{
+        const parsedValue = parseInt(this.teamSettings.meeting_duration_mins, null);
+        if(!parsedValue) {
+          this.$set(this.errors.meeting_duration_mins, 'invalid', true)
+          isValid = false;
+        }
+        else {
+          this.$set(this.teamSettings, 'meeting_duration_mins', parsedValue)
+        }
+      }
+
+      if(this.teamSettings.meeting_link &&
+        !this.validateURL(this.teamSettings.meeting_link)
+      ) {
+        this.$set(this.errors.meeting_link, 'invalid', true)
+        isValid = false;
+      }
+
+      if(this.teamSettings.call_team_method == 'SLACK'){
+        if(!this.teamSettings.slack_webhook) {
+          this.$set(this.errors.slack_webhook, 'empty', true)
+          isValid = false;
+        }
+        else if(!this.validateURL(this.teamSettings.slack_webhook)){
+          this.$set(this.errors.slack_webhook, 'invalid', true)
+          isValid = false;
+        }
+        else if(!this.validateSlackWebhook(this.teamSettings.slack_webhook)){
+          this.$set(this.errors.slack_webhook, 'invalid', true)
+          isValid = false;
+        }
+      }
+      return isValid;
+    },
+    validateURL(str)
+    {
+      let re =  /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+      return re.test(str)
+    },
+    validateSlackWebhook(str)
+    {
+      return str.indexOf(SLACK_WEBHOOK_ROOT) > 0;
+    },
+    updateSettings() {
+      if(!this.validateSettings()) {
+        return;
+      }
+
+      this.sending = true;
+
+      setTimeout(() => {
+        this.sending = false;
+      }, 2000)
     }
   }
 }
