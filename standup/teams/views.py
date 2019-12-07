@@ -1,3 +1,6 @@
+# django
+from django.db import transaction
+
 # Django rest
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -114,6 +117,20 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 		return Response(serializer.data)
+
+	@action(detail=True, methods=['delete'])
+	def archive_done(self, request, *args, **kwargs):
+		team = self.get_object()
+		done_unarchived_goals = Goal.objects.filter(
+			is_archived=False,
+			status=Goal.STATUS_DONE,
+			member__team=team
+		)
+		with transaction.atomic():
+			for goal in done_unarchived_goals.iterator():
+				goal.is_archived = True
+				goal.save()
+		return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class TeamMemberViewSet(viewsets.GenericViewSet):
