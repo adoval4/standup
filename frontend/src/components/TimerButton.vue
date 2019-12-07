@@ -33,6 +33,16 @@
     >
       We are done<span v-show="!finished"> ?</span><span v-show="finished"> !!</span>
     </md-button>
+
+    <md-snackbar
+      md-position="left"
+      :md-duration="2500"
+      :md-active.sync="showFinishedSnackbar"
+      md-persistent
+    >
+      <span>We are done! To do list was sent</span>
+    </md-snackbar>
+
   </div>
 </template>
 
@@ -45,7 +55,7 @@ export default {
       finished: false,
       running: false,
       interval_ms: 20,
-      title: 'Start'
+      showFinishedSnackbar: false
     }
   },
   computed: {
@@ -85,7 +95,8 @@ export default {
     setAsFinish: function() {
       const res = this.$store.dispatch('archiveGoalsDone');
       res.then(() => {
-        this.finished = true;        
+        this.finished = true;
+        this.showFinishedSnackbar = true;
       })
     }
   }

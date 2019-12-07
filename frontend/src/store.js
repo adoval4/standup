@@ -443,6 +443,22 @@ const store = new Vuex.Store({
         console.log(error);
       });
       return res;
+    },
+
+    callTeam(context) {
+      if(!context.state.user) { return; }
+      if(!context.state.team) { return; }
+
+      const res = ApiClient.callTeam(
+        context.state.user.token,
+        context.state.team.id
+      );
+
+      res.catch((error) => {
+        console.log(error);
+      });
+
+      return res;
     }
   }
 });

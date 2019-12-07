@@ -2,13 +2,13 @@
   <div class="page-container">
     <md-app md-waterfall md-mode="fixed">
       <md-app-toolbar class="md-primary">
-        <md-button v-show="user" class="md-icon-button" :to="{ name: 'home' }">
+        <md-button v-if="user" class="md-icon-button" :to="{ name: 'home' }">
           <md-icon>arrow_back</md-icon>
         </md-button>
         <span v-if="team" class="md-title logo" style="flex: 1">
           Standup - {{ team.name }}
         </span>
-        <md-button v-if="team && isTeamManager">Call</md-button>
+        <md-button v-if="team && isTeamManager" @click="callTeam">Call</md-button>
         <timer-button v-if="team && isTeamManager">Call</timer-button>
         <md-button
           v-if="team && isTeamManager"
@@ -110,6 +110,34 @@
           </form>
         </md-card>
 
+        <a
+          id="meeting-link-btn"
+          v-if="team"
+          :href="team.settings.meeting_link"
+          target="_blank"
+          rel="noopener noreferrer"
+          v-show="false"
+        >
+        </a>
+
+        <md-snackbar
+          md-position="left"
+          :md-duration="2500"
+          :md-active.sync="showCalledTeamSnackbar"
+          md-persistent
+        >
+          <span>Team called successfully!</span>
+        </md-snackbar>
+
+        <md-snackbar
+          md-position="left"
+          :md-duration="4500"
+          :md-active.sync="showCalledTeamFailedSnackbar"
+          md-persistent
+        >
+          <span>Error: Calling team failed</span>
+        </md-snackbar>
+
       </md-app-content>
     </md-app>
   </div>
@@ -141,7 +169,9 @@ export default {
             empty: false,
           },
         }
-      }
+      },
+      showCalledTeamSnackbar: false,
+      showCalledTeamFailedSnackbar: false,
     }
   },
   computed: {
@@ -197,6 +227,21 @@ export default {
       }
 
       return isValid;
+    },
+    callTeam: function() {
+      const res = this.$store.dispatch('callTeam');
+      // open metting link is available
+      res.then(() => {
+        this.showCalledTeamSnackbar = true;
+        this.openMeetingLink()
+      }).catch(() => {
+        this.showCalledTeamFailedSnackbar = true;
+      })
+    },
+    openMeetingLink: function() {
+      if(!this.team.settings.meeting_link) { return; }
+      const meeting_a_tag = document.getElementById('meeting-link-btn');
+      meeting_a_tag.click();
     },
     isValidEmail: function (email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
