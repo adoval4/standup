@@ -49,7 +49,9 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 
 	def list(self, request, *args, **kwargs):
 		user = self.request.user
-		queryset = user.managed_teams.filter(is_archived=False)
+		queryset = user.managed_teams.filter(
+			is_archived=False
+		).order_by('created')
 		queryset = self.filter_queryset(queryset)
 
 		page = self.paginate_queryset(queryset)
@@ -87,12 +89,13 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		data['settings'] = TeamSettingsSerializer(team.settings).data
 		data['managers'] = TeamManagerSerializer(team.managers, many=True).data
 		data['members'] = []
-		for member in team.members.filter(is_archived=False).iterator():
+		members_q = team.members.filter(is_archived=False).order_by('created')
+		for member in members_q.iterator():
 			member_data = MemberSerializer(member).data
 			# get member's pending goals
 			pending_goals = member.goals.filter(
 				is_archived=False
-			)
+			).order_by('created')
 			member_data['goals'] = []
 			for goal in pending_goals.iterator():
 				member_data['goals'].append(
