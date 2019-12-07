@@ -26,7 +26,8 @@ class GoalViewSet(mixins.UpdateModelMixin,
 	queryset = Goal.objects.all()
 
 	def get_permissions(self):
-		permissions = [ IsTeamManagerOrItsMemberGoal ]
+		# permissions = [ IsTeamManagerOrItsMemberGoal ]
+		permissions = [ AllowAny ]
 		if self.action in ['create']:
 			permissions = [ IsAuthenticated ]
 		if self.action in ['destroy']:

@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 # Models
+from standup.users.models import User
 from standup.teams.models import Team, Member, TeamSettings
 
 
@@ -10,6 +11,13 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ('id', 'name')
+
+
+class TeamManagerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email')
 
 
 class CreateTeamSerializer(serializers.Serializer):
