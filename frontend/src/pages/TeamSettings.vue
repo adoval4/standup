@@ -101,6 +101,37 @@
           </md-card>
         </form>
 
+        <md-button
+          @click="showDeleteConfimation = true"
+          class="md-accent"
+        >
+          Delete this team
+        </md-button>
+
+
+        <md-dialog-confirm
+          v-if="showDeleteConfimation"
+          :md-active.sync="showDeleteConfimation"
+          md-title="Are you sure?"
+          :md-content="`Please confirm you want to delete this team.`"
+          md-confirm-text="Cancel"
+          md-cancel-text="Delete"
+          @md-cancel="deleteTeam"
+          @md-confirm="showDeleteConfimation = false"
+        />
+
+
+        <md-snackbar
+          md-position="left"
+          :md-duration="2500"
+          :md-active.sync="showUpdateSnackbar"
+          md-persistent
+        >
+          <span>Successful update!</span>
+        </md-snackbar>
+
+
+
       </md-app-content>
     </md-app>
   </div>
@@ -127,7 +158,9 @@ export default {
           invalid: false
         }
       },
-      sending: false
+      sending: false,
+      showDeleteConfimation: false,
+      showUpdateSnackbar: false
     }
   },
   computed: mapState(['team']),
@@ -214,10 +247,27 @@ export default {
 
       this.sending = true;
 
-      setTimeout(() => {
+      const res = this.$store.dispatch('updateTeamSettings', {
+        settings: this.teamSettings
+      })
+
+      res.then(() => {
+        this.showUpdateSnackbar = true;
+      }).finally(() => {
         this.sending = false;
-      }, 2000)
+      })
+    },
+
+    deleteTeam: function() {
+      if(!this.team) { return }
+
+      this.$store.dispatch('deleteTeam', {
+        teamId: this.team.id
+      })
+
+      this.$router.push('/')
     }
+
   }
 }
 </script>

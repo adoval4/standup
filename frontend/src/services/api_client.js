@@ -13,6 +13,7 @@ const StandupApiClient = {
   },
 
   getOptions: function(token) {
+    if(!token) { return {} }
     return { headers: { 'Authorization': `Token ${token}` } };
   },
 
@@ -20,7 +21,7 @@ const StandupApiClient = {
     return axios.get(teamListUrl, this.getOptions(token));
   },
 
-  retrieveTeam: function(token, teamId) {
+  retrieveTeam: function(token = null, teamId) {
     const teamDetailUrl = `${teamListUrl}${teamId}/`;
     return axios.get(teamDetailUrl, this.getOptions(token));
   },
@@ -32,6 +33,11 @@ const StandupApiClient = {
       data,
       this.getOptions(token)
     );
+  },
+
+  deleteTeam: function(token, teamId) {
+    const teamDetailUrl = `${teamListUrl}${teamId}/`;
+    return axios.delete(teamDetailUrl, this.getOptions(token));
   },
 
   createTeamMember: function(token, teamId, newMemberName, newMemberEmail) {
@@ -51,7 +57,12 @@ const StandupApiClient = {
     return axios.post(goalsListUrl, data, this.getOptions(token));
   },
 
-  updateGoalStatus: function(token, goalId, status) {
+  updateTeamSettings: function(token, teamId, newSettings) {
+    const teamSettingsUrl = `${teamListUrl}${teamId}/setup/`;
+    return axios.put(teamSettingsUrl, newSettings, this.getOptions(token));
+  },
+
+  updateGoalStatus: function(token = null, goalId, status) {
     const goalDetailUrl = `${goalsListUrl}${goalId}/`;
     const data = { status };
     return axios.patch(goalDetailUrl, data, this.getOptions(token));

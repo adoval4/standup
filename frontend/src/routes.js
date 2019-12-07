@@ -3,16 +3,45 @@ import Team from './pages/Team.vue';
 import TeamSettings from './pages/TeamSettings.vue';
 import Login from './pages/Login.vue';
 
+import store from './store.js';
+
+
+const isAuthenticated = () => {
+  if(!localStorage.authenticatedUser) { return false; }
+  const user = JSON.parse(localStorage.authenticatedUser);
+  return user.token !== null;
+}
+
+
+const ifAuthenticated = (to, from, next) => {
+  if (isAuthenticated()) {
+    next()
+    return
+  }
+  next('/login')
+}
+
+const ifNotAuthenticated = (to, from, next) => {
+  if (!isAuthenticated()) {
+    next()
+    return
+  }
+  next('/')
+}
+
+
 const routes = [
   {
     path: '/',
     component: Home,
-    name: 'home'
+    name: 'home',
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/login',
     component: Login,
-    name: 'login'
+    name: 'login',
+    beforeEnter: ifNotAuthenticated
   },
   {
     path: '/:teamId',
@@ -22,7 +51,8 @@ const routes = [
   {
     path: '/:teamId/settings',
     component: TeamSettings,
-    name: 'teamSettings'
+    name: 'teamSettings',
+    beforeEnter: ifAuthenticated
   }
 ];
 

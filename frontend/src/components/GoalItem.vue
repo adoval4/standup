@@ -55,6 +55,7 @@
     </span>
     <md-button
       class="md-icon-button"
+      v-if="isTeamManager"
       v-show="!editing"
       @click="deleteGoal"
     >
@@ -114,7 +115,8 @@ export default {
     },
     description() {
       return this.updating ? this.newDescription : this.goal.description;
-    }
+    },
+    isTeamManager() { return this.$store.getters.isUserTeamManager },
   },
   methods: {
     updateStatus(value) {
@@ -131,6 +133,8 @@ export default {
       });
     },
     editDescription() {
+      if(!this.isTeamManager) { return }
+
       this.newDescription = this.goal.description;
       this.editing = true;
 

@@ -2,7 +2,20 @@
   <div class="page-container">
     <md-app md-waterfall md-mode="fixed">
       <md-app-toolbar class="md-primary">
-        <span class="md-title logo">Standup</span>
+        <span class="md-title logo" style="flex: 1">Standup</span>
+
+        <md-menu md-size="medium" md-align-trigger>
+          <md-avatar class="md-avatar-icon md-primary" md-menu-trigger>
+            <md-icon>account_circle</md-icon>
+          </md-avatar>
+
+          <md-menu-content>
+            <md-menu-item @click="logoutUser" >
+              Logout
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+
       </md-app-toolbar>
 
       <md-app-content >
@@ -20,12 +33,14 @@
             v-for="team in teams"
             :key="team.id"
             :to="`/${team.id}`"
+            :md-ripple="false"
           >
             <span
               class="md-list-item-text"
             >
               {{ team.name }}
             </span>
+
           </md-list-item>
 
           <md-list-item>
@@ -51,6 +66,7 @@
             ></md-input>
           </md-field>
         </md-empty-state>
+
       </md-app-content>
     </md-app>
   </div>
@@ -78,13 +94,14 @@ export default {
   methods: {
     logoutUser: function() {
       this.$store.commit('logoutUser');
+      this.$router.push('/login');
     },
     createNewGroup: function() {
       this.$store.dispatch('createTeam', {
         name: this.newTeamName
       });
       this.newTeamName = null;
-    }
+    },
   }
 }
 </script>

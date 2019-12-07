@@ -2,15 +2,15 @@
   <div class="page-container">
     <md-app md-waterfall md-mode="fixed">
       <md-app-toolbar class="md-primary">
-        <md-button class="md-icon-button" :to="{ name: 'home' }">
+        <md-button v-show="user" class="md-icon-button" :to="{ name: 'home' }">
           <md-icon>arrow_back</md-icon>
         </md-button>
         <span v-if="team" class="md-title logo" style="flex: 1">
           Standup - {{ team.name }}
         </span>
-        <md-button v-if="team">Call</md-button>
+        <md-button v-if="team && isTeamManager">Call</md-button>
         <md-button
-          v-if="team"
+          v-if="team && isTeamManager"
           :to="{ name: 'teamSettings', payload:{ teamId: this.team.id } }"
           class="md-icon-button"
         >
@@ -39,6 +39,7 @@
         </member-to-do-list>
 
         <md-card
+          v-if="isTeamManager"
           class="member-card new-member-card"
         >
           <md-progress-bar
@@ -140,7 +141,11 @@ export default {
       }
     }
   },
-  computed: mapState(['team']),
+  computed: {
+    user() { return this.$store.state.user },
+    team() { return this.$store.state.team },
+    isTeamManager() { return this.$store.getters.isUserTeamManager },
+  },
   created() {
     this.$store.dispatch('getTeam', {
       teamId: this.$route.params.teamId

@@ -18,6 +18,24 @@ const store = new Vuex.Store({
       goals: {}
     }
   },
+  getters: {
+    isAuthenticated(state) {
+      if(!localStorage.authenticatedUser) { return false; }
+      const user = JSON.parse(localStorage.authenticatedUser);
+      return user.token !== null;
+    },
+    isUserTeamManager(state) {
+      if(!state.user) { return false; }
+      if(!state.team) { return false; }
+      if(!state.team.managers) { return false; }
+
+      for(let i=0; i < state.team.managers.length; i++) {
+        console.log(i, state.team.managers[i].id == state.user.id)
+        if(state.team.managers[i].id == state.user.id) { return true; }
+      }
+      return false;
+    }
+  },
   mutations: {
 
     getUserFromLocalStorage(state) {
@@ -27,8 +45,8 @@ const store = new Vuex.Store({
 
     setUser(state, payload = {}) {
       if(!payload.user) { return; }
-      localStorage.authenticatedUser = JSON.stringify(payload.user);
       state.user = payload.user;
+      localStorage.authenticatedUser = JSON.stringify(payload.user);
     },
 
     setTeams(state, payload = {}) {
@@ -39,6 +57,15 @@ const store = new Vuex.Store({
     setTeam(state, payload = {}) {
       if(!payload.team) { return; }
       state.team = payload.team;
+    },
+
+    removeTeam(state, payload = {}) {
+      if(!state.teams) { return; }
+      if(!payload.teamId) { return; }
+
+      state.teams = state.teams.filter((team) => {
+        return team.id != payload.teamId
+      });
     },
 
     mapTeamMembersAndGoals(state) {
@@ -130,6 +157,12 @@ const store = new Vuex.Store({
       }
     },
 
+    updateTeamSettings(state, payload = {}) {
+      if(!payload.settings) { return; }
+
+      state.team.settings = payload.settings;
+    },
+
     logoutUser(state) {
       localStorage.removeItem('authenticatedUser');
       state.user = null;
@@ -155,10 +188,13 @@ const store = new Vuex.Store({
     },
 
     getTeam(context, payload = {}) {
-      if(!context.state.user) { return; }
+      let token = null;
+      if(context.state.user) {
+        token = context.state.user.token
+      }
 
       const res = ApiClient.retrieveTeam(
-        context.state.user.token,
+        token,
         payload.teamId
       );
 
@@ -245,14 +281,18 @@ const store = new Vuex.Store({
     },
 
     updateGoalStatus(context, payload = {}) {
-      if(!context.state.user) { return; }
       if(!context.state.team) { return; }
       if(!payload.memberId) { return; }
       if(!payload.goalId) { return; }
       if(!payload.status) { return; }
 
+      let token = null;
+      if(context.state.user) {
+        token = context.state.user.token
+      }
+
       const res = ApiClient.updateGoalStatus(
-        context.state.user.token,
+        token,
         payload.goalId,
         payload.status
       );
@@ -286,6 +326,27 @@ const store = new Vuex.Store({
           memberId: payload.memberId,
           goalId: payload.goalId,
           status: status
+        })
+        context.commit('mapTeamMembersAndGoals')
+      }).catch((error) => {
+        console.log(error);
+      });
+
+      return res;
+    },
+
+    deleteTeam(context, payload = {}) {
+      if(!context.state.user) { return; }
+      if(!context.state.teams) { return; }
+
+      const res = ApiClient.deleteTeam(
+        context.state.user.token,
+        payload.teamId
+      );
+
+      res.then((response) => {
+        context.commit('removeTeam', {
+          teamId: payload.teamId,
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
@@ -343,6 +404,28 @@ const store = new Vuex.Store({
 
       return res;
     },
+
+    updateTeamSettings(context, payload = {}) {
+      if(!context.state.user) { return; }
+      if(!context.state.team) { return; }
+      if(!payload.settings) { return; }
+
+      const res = ApiClient.updateTeamSettings(
+        context.state.user.token,
+        context.state.team.id,
+        payload.settings
+      );
+
+      res.then((response) => {
+        context.commit('updateTeamSettings', {
+          settings: response.data
+        })
+      }).catch((error) => {
+        console.log(error);
+      });
+
+      return res;
+    }
   }
 });
 

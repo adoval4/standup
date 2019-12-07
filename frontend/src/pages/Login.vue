@@ -105,16 +105,16 @@ export default {
         this.form.email,
         this.form.password
       );
-
+      let authenticated = false;
       res.then((response) => {
         this.$store.commit('setUser', {'user': response.data})
         this.$router.push({ name: 'home' })
       }).catch((error) => {
-        console.log(error);
         this.authError = true;
       }).finally(() => {
         this.sending = false;
       });
+      
     },
     validateForm() {
       let isValid = true;

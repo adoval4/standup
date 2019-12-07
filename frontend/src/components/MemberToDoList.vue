@@ -36,7 +36,10 @@
           >
           </goal-item>
 
-          <md-list-item class="new-goal-list-item">
+          <md-list-item
+            v-if="isTeamManager"
+            class="new-goal-list-item"
+          >
             <span>
               <span class="progress-radio-btn">
                 <md-radio disabled></md-radio>
@@ -71,6 +74,7 @@
     </md-card>
 
     <md-dialog-confirm
+      v-if="isTeamManager"
       :md-active.sync="showDeleteConfirmation"
       md-title="Are you sure?"
       :md-content="`Please confirm you want to remove ${this.member.name} from this team.`"
@@ -102,6 +106,9 @@ export default {
       },
       showDeleteConfirmation: false,
     }
+  },
+  computed: {
+    isTeamManager() { return this.$store.getters.isUserTeamManager },
   },
   methods: {
     createNewGoal() {
