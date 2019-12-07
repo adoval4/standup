@@ -92,8 +92,6 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 			# get member's pending goals
 			pending_goals = member.goals.filter(
 				is_archived=False
-			).exclude(
-				status=Goal.STATUS_DONE
 			)
 			member_data['goals'] = []
 			for goal in pending_goals.iterator():
