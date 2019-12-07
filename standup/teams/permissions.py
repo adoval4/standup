@@ -9,6 +9,15 @@ class IsTeamManager(permissions.BasePermission):
     def has_permission(self, request, view):
         q = request.user.managed_teams.filter(pk=view.team.pk)
         return q.count() > 0
+        
+
+class IsTeamManagerOfObject(permissions.BasePermission):
+    """
+    Validates that the user is a member of the view team.
+    """
+    def has_object_permission(self, request, view, obj):
+        q = request.user.managed_teams.filter(pk=obj.pk)
+        return q.count() > 0
 
 
 class IsTeamCreator(permissions.BasePermission):

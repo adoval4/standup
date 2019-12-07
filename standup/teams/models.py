@@ -8,9 +8,13 @@ from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.template.loader import render_to_string
 
 # Models
 from standup.utils.models import CustomUserCreatedBaseModel
+
+# api clients
+from standup.utils.apiclients import SlackClient
 
 
 @python_2_unicode_compatible
@@ -19,6 +23,10 @@ class Team(CustomUserCreatedBaseModel):
 
 	Represents a work team.
 	"""
+
+	CALL_MESSAGE = 'CALL'
+	TO_DO_LIST_MESSAGE = 'TO_DO'
+
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	name = models.CharField(max_length=350)
 	managers = models.ManyToManyField(
@@ -36,6 +44,44 @@ class Team(CustomUserCreatedBaseModel):
 			self.created_by,
 			self.id
 		)
+
+	@property
+	def active_members(self):
+		return self.members.filter(is_archived=False).order_by('created')
+
+	def call_team(self):
+		self.notify_team(Team.CALL_MESSAGE)
+
+	def send_to_do_list(self):
+		self.notify_team(Team.TO_DO_LIST_MESSAGE)
+
+	def notify_team(self, message_type):
+		if self.settings.call_team_method == TeamSettings.SLACK:
+			if self.settings.slack_webhook is None:
+				return None
+			self.send_slack_message(message_type)
+		elif self.settings.call_team_method == TeamSettings.EMAIL:
+			self.send_email(message_type)
+
+	def send_slack_message(self, message_type):
+		message = None
+		if message_type == Team.CALL_MESSAGE:
+			message = render_to_string(
+				'team_call_slack.txt',
+				{'meeting_link': self.settings.meeting_link}
+			)
+		elif message_type == Team.TO_DO_LIST_MESSAGE:
+			message = render_to_string(
+				'team_to_do_list_slack.txt',
+				{'team': self}
+			)
+
+		if message is not None:
+			SlackClient.send_message(self.settings.slack_webhook, message)
+
+	def send_email(self, message_type):
+		raise NotImplementedError('send_email')
+
 
 
 @python_2_unicode_compatible
@@ -141,6 +187,10 @@ class Member(CustomUserCreatedBaseModel):
 			return None
 		except KeyError:
 			return None
+
+	@property
+	def pending_goals(self):
+		return self.goals.filter(is_archived=False).order_by('created')
 
 
 @receiver(post_save, sender=Team)

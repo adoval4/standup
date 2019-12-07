@@ -14,7 +14,11 @@ from standup.teams.models import Team, Member
 from standup.goals.models import Goal
 
 # Permissions
-from standup.teams.permissions import IsTeamManager, IsTeamCreator
+from standup.teams.permissions import (
+	IsTeamManager, 
+	IsTeamCreator,
+	IsTeamManagerOfObject
+)
 
 # Serializers
 from standup.teams.serializers import (
@@ -43,6 +47,8 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 			permissions.append(IsAuthenticated)
 		if self.action in ['update', 'partial_update']:
 			permissions.append(IsTeamCreator)
+		if self.action in ['archive_done', 'call']:
+			permissions.append(IsTeamManagerOfObject)
 		return [p() for p in permissions]
 
 	def get_serializer_class(self):
@@ -92,18 +98,14 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		data['settings'] = TeamSettingsSerializer(team.settings).data
 		data['managers'] = TeamManagerSerializer(team.managers, many=True).data
 		data['members'] = []
-		members_q = team.members.filter(is_archived=False).order_by('created')
-		for member in members_q.iterator():
+		members_q = team.active_members
+		for member in team.active_members.iterator():
 			member_data = MemberSerializer(member).data
 			# get member's pending goals
-			pending_goals = member.goals.filter(
-				is_archived=False
-			).order_by('created')
-			member_data['goals'] = []
-			for goal in pending_goals.iterator():
-				member_data['goals'].append(
-					GoalSerializer(goal).data
-				)
+			member_data['goals'] = GoalSerializer(
+				member.pending_goals,
+				many=True
+			).data
 			data['members'].append(member_data)
 		return Response(data)
 
@@ -118,6 +120,12 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		serializer.save()
 		return Response(serializer.data)
 
+	@action(detail=True, methods=['get'])
+	def call(self, request, *args, **kwargs):
+		team = self.get_object()
+		team.call_team()
+		return Response(None, status=status.HTTP_200_OK)
+
 	@action(detail=True, methods=['delete'])
 	def archive_done(self, request, *args, **kwargs):
 		team = self.get_object()
@@ -130,6 +138,9 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 			for goal in done_unarchived_goals.iterator():
 				goal.is_archived = True
 				goal.save()
+
+		team.send_to_do_list()
+
 		return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
