@@ -200,6 +200,7 @@ export default {
 
 .md-list-item-text.done {
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
 </style>
