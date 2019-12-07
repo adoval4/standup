@@ -83,6 +83,11 @@ const StandupApiClient = {
     const teamMemberDetailUrl = `${teamListUrl}${teamId}/members/${memberId}/`;
     return axios.delete(teamMemberDetailUrl, this.getOptions(token));
   },
+
+  archiveGoalsDone: function(token, teamId) {
+    const teamArchiveDonelUrl = `${teamListUrl}${teamId}/archive_done/`;
+    return axios.delete(teamArchiveDonelUrl, this.getOptions(token));
+  }
 }
 
 export default StandupApiClient;

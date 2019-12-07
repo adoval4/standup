@@ -9,6 +9,7 @@
           Standup - {{ team.name }}
         </span>
         <md-button v-if="team && isTeamManager">Call</md-button>
+        <timer-button v-if="team && isTeamManager">Call</timer-button>
         <md-button
           v-if="team && isTeamManager"
           :to="{ name: 'teamSettings', payload:{ teamId: this.team.id } }"
@@ -116,11 +117,13 @@
 
 <script>
 import MemberToDoList from '../components/MemberToDoList.vue';
+import TimerButton from '../components/TimerButton.vue';
 import { mapState } from 'vuex';
 
 export default {
   components: {
-    'member-to-do-list': MemberToDoList
+    'member-to-do-list': MemberToDoList,
+    'timer-button': TimerButton
   },
   data: function() {
     return {

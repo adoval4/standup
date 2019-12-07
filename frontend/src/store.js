@@ -30,7 +30,6 @@ const store = new Vuex.Store({
       if(!state.team.managers) { return false; }
 
       for(let i=0; i < state.team.managers.length; i++) {
-        console.log(i, state.team.managers[i].id == state.user.id)
         if(state.team.managers[i].id == state.user.id) { return true; }
       }
       return false;
@@ -114,8 +113,6 @@ const store = new Vuex.Store({
       if(!payload.memberId) { return; }
       if(!payload.goal) { return; }
 
-      console.log('mutation updateGoal');
-
       for(let i=0; state.team.members.length; i++) {
         if(state.team.members[i].id == payload.memberId) {
           for(let j=0; state.team.members[i].goals.length; j++) {
@@ -188,6 +185,8 @@ const store = new Vuex.Store({
     },
 
     getTeam(context, payload = {}) {
+      if(!payload.teamId) { return; }
+
       let token = null;
       if(context.state.user) {
         token = context.state.user.token
@@ -424,6 +423,25 @@ const store = new Vuex.Store({
         console.log(error);
       });
 
+      return res;
+    },
+
+    archiveGoalsDone(context, payload = {}) {
+      if(!context.state.user) { return; }
+      if(!context.state.team) { return; }
+
+      const res = ApiClient.archiveGoalsDone(
+        context.state.user.token,
+        context.state.team.id
+      );
+
+      res.then((response) => {
+        context.dispatch('getTeam', {
+          teamId: context.state.team.id
+        })
+      }).catch((error) => {
+        console.log(error);
+      });
       return res;
     }
   }

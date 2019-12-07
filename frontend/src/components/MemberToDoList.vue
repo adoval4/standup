@@ -16,7 +16,10 @@
           <div class="md-subhead">{{ member.email }}</div>
         </md-card-header>
 
-        <md-card-actions class="md-layout-item">
+        <md-card-actions
+          v-if="isTeamManager"
+          class="md-layout-item"
+        >
           <md-button
             class="md-icon-button"
             @click="showDeleteConfirmation = true"
@@ -35,6 +38,10 @@
             :key="goal.id"
           >
           </goal-item>
+
+          <md-list-item v-if="member.goals.length == 0" class="text-muted">
+            No pending goals for now
+          </md-list-item>
 
           <md-list-item
             v-if="isTeamManager"
