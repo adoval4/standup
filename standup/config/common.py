@@ -48,7 +48,14 @@ class Common(Configuration):
     WSGI_APPLICATION = 'standup.wsgi.application'
 
     # Email
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.sendgrid.net'
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = 'Stantdup <noreply@stantdup.co>'
+    DEFAULT_USER_EMAIL = 'Stantdup'
+    EMAIL_SEND_ON_THREAD = True
 
     ADMINS = (
         ('Author', 'adoval4@gmail.com'),
@@ -90,7 +97,9 @@ class Common(Configuration):
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': STATICFILES_DIRS,
+            'DIRS': STATICFILES_DIRS + [
+                join(os.path.dirname(BASE_DIR), '/teams/templates/')
+            ],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
