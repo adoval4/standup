@@ -42,6 +42,7 @@
     </span>
     <span
       class="md-list-item-text"
+      :class="{ done: goal.status == 'DONE' }"
       v-show="!editing"
       @click="editDescription"
     >
@@ -197,5 +198,8 @@ export default {
   color: inherit !important;
 }
 
+.md-list-item-text.done {
+  text-decoration: line-through;
+}
 
 </style>
