@@ -1,0 +1,6 @@
+TO DO LIST
+
+{% for member in team.active_members.all %}{{ member.name }}:
+{% for goal in member.pending_goals.all %}- {{ goal.description }}
+{% endfor %}
+{% endfor %}
