@@ -1,0 +1,11 @@
+<br/>
+<strong>Today's to do list</strong>
+<br/>
+{% for member in team.active_members.all %}
+{{ member.name }}:
+<br/>
+{% for goal in member.pending_goals.all %}
+- {{ goal.description }}
+{% endfor %}
+<br/>
+{% endfor %}
