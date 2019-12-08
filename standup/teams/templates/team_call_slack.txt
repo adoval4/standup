@@ -1,1 +1,1 @@
-<!channel> It's Time for a Standup! {% if meeting_link %}-> {{ meeting_link }}{% endif %}
+<!channel> It's Time for a {{ team.name }}'s Standup! {% if team.settings.meeting_link %}-> {{ team.settings.meeting_link }}{% endif %}
