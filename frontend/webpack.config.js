@@ -83,7 +83,18 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: '#eval-source-map',
+}
+
+if (process.env.NODE_ENV === 'development') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('development'),
+        API_URL: JSON.stringify('//localhost:8000'),
+      }
+    })
+  ])
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -92,7 +103,8 @@ if (process.env.NODE_ENV === 'production') {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"production"'
+        NODE_ENV: JSON.stringify('production'),
+        API_URL: JSON.stringify('//api.standup.adolfovaldivieso.com'),      
       }
     }),
     new webpack.optimize.UglifyJsPlugin({
