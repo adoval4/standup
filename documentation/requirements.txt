@@ -1,0 +1,2 @@
+# Developer Tools
+mkdocs==1.0.4
