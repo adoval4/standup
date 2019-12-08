@@ -20,6 +20,7 @@
 
       <md-app-content >
         <md-progress-bar
+          id="top-progress-bar"
           md-mode="indeterminate"
           v-if="!teams"
         >
@@ -107,4 +108,12 @@ export default {
 </script>
 
 <style lang="css" scoped>
+
+#top-progress-bar {
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  margin-top: -16px;
+}
+
 </style>
