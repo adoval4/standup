@@ -4,18 +4,20 @@ services:
   postgres:
     image: postgres:9.6
 
-  web:
+  api:
     restart: always
-    image: web
-    build: ./
+    image: local-api
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
     command: >
       bash -c "python wait_for_postgres.py &&
                ./manage.py migrate &&
                ./manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./:/code
+      - ./api/:/code
     env_file:
-      - ./.envs/.local/.web
+      - ./api/.env/.local
     ports:
       - "8000:8000"
     depends_on:
@@ -23,9 +25,12 @@ services:
 
   documentation:
     restart: always
-    build: ./
+    image: documentation
+    build:
+      context: .
+      dockerfile: ./documentation/Dockerfile
     command: "mkdocs serve"
     volumes:
-      - ./:/code
+      - ./documentation:/code
     ports:
       - "8001:8001"
