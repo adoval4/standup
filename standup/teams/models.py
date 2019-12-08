@@ -9,12 +9,17 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 # Models
 from standup.utils.models import CustomUserCreatedBaseModel
 
 # api clients
 from standup.utils.apiclients import SlackClient
+
+# email utils
+from standup.utils.email import send_mail
+
 
 
 @python_2_unicode_compatible
@@ -49,6 +54,10 @@ class Team(CustomUserCreatedBaseModel):
 	def active_members(self):
 		return self.members.filter(is_archived=False).order_by('created')
 
+	@property
+	def active_members_emails(self):
+		return [ m.email for m in self.active_members.iterator() ]
+
 	def call_team(self):
 		self.notify_team(Team.CALL_MESSAGE)
 
@@ -68,7 +77,7 @@ class Team(CustomUserCreatedBaseModel):
 		if message_type == Team.CALL_MESSAGE:
 			message = render_to_string(
 				'team_call_slack.txt',
-				{'meeting_link': self.settings.meeting_link}
+				{'team': self}
 			)
 		elif message_type == Team.TO_DO_LIST_MESSAGE:
 			message = render_to_string(
@@ -80,8 +89,26 @@ class Team(CustomUserCreatedBaseModel):
 			SlackClient.send_message(self.settings.slack_webhook, message)
 
 	def send_email(self, message_type):
-		raise NotImplementedError('send_email')
+		subject = None
+		message = None
+		if message_type == Team.CALL_MESSAGE:
+			subject = 'It\'s time for your Standup'
+			message = render_to_string(
+				'team_call_email.txt',
+				{'team': self}
+			)
+		elif message_type == Team.TO_DO_LIST_MESSAGE:
+			now = timezone.localtime(timezone.now()).date()
+			subject = '{} | To do list ({})'.format(self.name, now)
+			message = render_to_string(
+				'team_to_do_list_email.txt',
+				{'team': self}
+			)
 
+		if None not in [ subject, message ]:
+			send_mail(
+				subject, message, self.active_members_emails, is_html=True
+			)
 
 
 @python_2_unicode_compatible
