@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const baseUrl = "//localhost:8000";
+
+const baseUrl = process.env.API_URL;
 const apiBaseUrl = `${baseUrl}/api/v1`;
 const teamListUrl = `${apiBaseUrl}/teams/`;
 const goalsListUrl = `${apiBaseUrl}/goals/`;
