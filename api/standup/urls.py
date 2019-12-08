@@ -26,7 +26,7 @@ router.register(
 router.register(r'goals', GoalViewSet, base_name="goal")
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
     path('api/v1/', include(router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

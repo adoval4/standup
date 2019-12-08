@@ -44,6 +44,7 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = ["*"]
     ROOT_URLCONF = 'standup.urls'
+    ADMIN_URL = 'admin/'
     SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
     WSGI_APPLICATION = 'standup.wsgi.application'
 
@@ -57,7 +58,7 @@ class Common(Configuration):
     # Postgres
     DATABASES = {
         'default': dj_database_url.config(
-            default='postgres://postgres:@postgres:5432/postgres',
+            default=os.getenv('DATABASE_URL'),
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
