@@ -22,7 +22,7 @@
         <md-progress-bar
           id="top-progress-bar"
           md-mode="indeterminate"
-          v-if="!teams"
+          v-if="loading"
         >
         </md-progress-bar>
 
@@ -68,21 +68,30 @@
           </md-field>
         </md-empty-state>
 
+        <server-unreachable-snackbar></server-unreachable-snackbar>
+
       </md-app-content>
     </md-app>
   </div>
 </template>
 
 <script>
+import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
+
 export default {
+  components: {
+    'server-unreachable-snackbar': ServerUnreachableSnackbar
+  },
   data() {
     return {
       newTeamName: null,
+      loading: true,
     }
   },
   created() {
     // get teams
-    this.$store.dispatch('getTeams');
+    const res = this.$store.dispatch('getTeams');
+    res.finally(() => { this.loading = false })
   },
   computed: {
     user: function() {

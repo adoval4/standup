@@ -13,10 +13,10 @@
           Standup - {{ team.name }} | Settings
         </span>
       </md-app-toolbar>
-      <md-app-content v-if="teamSettings" class="md-scrollbar">
+      <md-app-content class="md-scrollbar">
 
         <form novalidate class="md-layout" @submit.prevent="updateSettings">
-          <md-card class="md-layout-item md-size-50 md-small-size-100">
+          <md-card v-if="teamSettings" class="md-layout-item md-size-50 md-small-size-100">
             <md-progress-bar md-mode="indeterminate" v-if="sending" />
 
             <md-card-header>
@@ -130,7 +130,7 @@
           <span>Successful update!</span>
         </md-snackbar>
 
-
+        <server-unreachable-snackbar></server-unreachable-snackbar>
 
       </md-app-content>
     </md-app>
@@ -138,11 +138,16 @@
 </template>
 
 <script>
+import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
 import { mapState } from 'vuex';
+
 
 const SLACK_WEBHOOK_ROOT = '//hooks.slack.com/';
 
 export default {
+  components: {
+    'server-unreachable-snackbar': ServerUnreachableSnackbar,
+  },
   data: function() {
     return {
       teamSettings: null,

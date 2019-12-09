@@ -63,16 +63,22 @@
           </md-card>
 
         </form>
+
+        <server-unreachable-snackbar></server-unreachable-snackbar>
+
       </md-app-content>
     </md-app>
   </div>
 </template>
 
 <script>
+import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
 import ApiClient from '../services/api_client'
 
 export default {
-  name: 'Login',
+  components: {
+    'server-unreachable-snackbar': ServerUnreachableSnackbar,
+  },
   data() {
     return {
       form: {
@@ -110,11 +116,11 @@ export default {
         this.$store.commit('setUser', {'user': response.data})
         this.$router.push({ name: 'home' })
       }).catch((error) => {
-        this.authError = true;
+        if(error.response) { this.authError = true; }
       }).finally(() => {
         this.sending = false;
       });
-      
+
     },
     validateForm() {
       let isValid = true;

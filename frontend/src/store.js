@@ -14,6 +14,7 @@ const store = new Vuex.Store({
       user: null,
       teams: null,
       team: null,
+      isServerRechable: false,
       members: {},
       goals: {}
     }
@@ -160,6 +161,12 @@ const store = new Vuex.Store({
       state.team.settings = payload.settings;
     },
 
+    setServerReachability(state, payload = {}) {
+      if(!payload.reachable) { return; }
+
+      state.isServerRechable = payload.reachable;
+    },
+
     logoutUser(state) {
       localStorage.removeItem('authenticatedUser');
       state.user = null;
@@ -174,11 +181,13 @@ const store = new Vuex.Store({
       const res = ApiClient.getTeams(context.state.user.token);
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('setTeams', {
           teams: response.data.results
         })
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -198,12 +207,14 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('setTeam', {
           team: response.data
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -219,11 +230,13 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('addTeam', {
           team: response.data
         })
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -243,12 +256,14 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('addTeamMember', {
           member: response.data
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -267,6 +282,7 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('addMemberGoal', {
           memberId: payload.memberId,
           goal: response.data
@@ -274,6 +290,7 @@ const store = new Vuex.Store({
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -297,6 +314,7 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('updateGoal', {
           memberId: payload.memberId,
           goal: response.data
@@ -304,6 +322,7 @@ const store = new Vuex.Store({
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -321,6 +340,7 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('removeGoal', {
           memberId: payload.memberId,
           goalId: payload.goalId,
@@ -329,6 +349,7 @@ const store = new Vuex.Store({
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -344,12 +365,14 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('removeTeam', {
           teamId: payload.teamId,
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -369,6 +392,7 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('updateGoal', {
           memberId: payload.memberId,
           goal: response.data
@@ -376,6 +400,7 @@ const store = new Vuex.Store({
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -393,12 +418,14 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('removeTeamMember', {
           memberId: payload.memberId
         })
         context.commit('mapTeamMembersAndGoals')
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -416,11 +443,13 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.commit('updateTeamSettings', {
           settings: response.data
         })
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;
@@ -436,11 +465,13 @@ const store = new Vuex.Store({
       );
 
       res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
         context.dispatch('getTeam', {
           teamId: context.state.team.id
         })
       }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
       return res;
     },
@@ -454,8 +485,11 @@ const store = new Vuex.Store({
         context.state.team.id
       );
 
-      res.catch((error) => {
+      res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
+      }).catch((error) => {
         console.log(error);
+        context.commit('setServerReachability', { reachable: false })
       });
 
       return res;

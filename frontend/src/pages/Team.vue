@@ -24,119 +24,124 @@
         </md-button>
       </md-app-toolbar>
 
-      <md-app-content v-if="team" class="md-scrollbar">
-        <md-progress-bar
-          md-mode="indeterminate"
-          v-if="!team"
-        >
-        </md-progress-bar>
-
-        <member-to-do-list
-          v-for="member in team.members"
-          :member="member"
-          :key="member.id"
-          class="member-card"
-        >
-        </member-to-do-list>
-
-        <md-card
-          v-if="isTeamManager"
-          class="member-card new-member-card"
-        >
+      <md-app-content class="md-scrollbar">
+        <div v-if="team">
           <md-progress-bar
-            v-if="newMember.sending"
             md-mode="indeterminate"
+            v-if="!team"
           >
           </md-progress-bar>
-          <md-card-header>
-            <div v-if="team.members.length > 0" class="md-title">+ New member</div>
-            <div v-if="team.members.length == 0" class="md-title">+ Add first member</div>
-          </md-card-header>
-          <form novalidate @submit.prevent="createNewMember">
-            <md-card-content class="new-memeber-form-ctn" >
-              <div class="md-layout md-gutter">
-                <div class="md-layout-item md-small-size-50">
-                  <md-field
-                    class=""
-                    md-inline
-                  >
-                    <label>Name</label>
-                    <md-input
-                      name="new-member-name"
-                      id="new-member-name"
-                      v-model="newMember.name"
-                      :disabled="newMember.sending"
-                    ></md-input>
-                    <span class="md-error " v-if="newMember.errors.name.empty">
-                      Name is required
-                    </span>
-                  </md-field>
+
+          <member-to-do-list
+            v-for="member in team.members"
+            :member="member"
+            :key="member.id"
+            class="member-card"
+          >
+          </member-to-do-list>
+
+          <md-card
+            v-if="isTeamManager"
+            class="member-card new-member-card"
+          >
+            <md-progress-bar
+              v-if="newMember.sending"
+              md-mode="indeterminate"
+            >
+            </md-progress-bar>
+            <md-card-header>
+              <div v-if="team.members.length > 0" class="md-title">+ New member</div>
+              <div v-if="team.members.length == 0" class="md-title">+ Add first member</div>
+            </md-card-header>
+            <form novalidate @submit.prevent="createNewMember">
+              <md-card-content class="new-memeber-form-ctn" >
+                <div class="md-layout md-gutter">
+                  <div class="md-layout-item md-small-size-50">
+                    <md-field
+                      class=""
+                      md-inline
+                    >
+                      <label>Name</label>
+                      <md-input
+                        name="new-member-name"
+                        id="new-member-name"
+                        v-model="newMember.name"
+                        :disabled="newMember.sending"
+                      ></md-input>
+                      <span class="md-error " v-if="newMember.errors.name.empty">
+                        Name is required
+                      </span>
+                    </md-field>
+                  </div>
+                  <div class="md-layout-item md-small-size-50">
+                    <md-field
+                      class=""
+                      md-inline
+                    >
+                      <label>Email</label>
+                      <md-input
+                        name="new-member-email"
+                        id="new-member-email"
+                        v-model="newMember.email"
+                        :disabled="newMember.sending"
+                      ></md-input>
+                      <span class="md-error " v-if="newMember.errors.email.empty">
+                        Email is required
+                      </span>
+                      <span class="md-error " v-if="newMember.errors.email.invalid">
+                        Email provided is invalid
+                      </span>
+                      <span class="md-error " v-if="newMember.errors.email.existing">
+                        Email is already registered on this team
+                      </span>
+                    </md-field>
+                  </div>
                 </div>
-                <div class="md-layout-item md-small-size-50">
-                  <md-field
-                    class=""
-                    md-inline
-                  >
-                    <label>Email</label>
-                    <md-input
-                      name="new-member-email"
-                      id="new-member-email"
-                      v-model="newMember.email"
-                      :disabled="newMember.sending"
-                    ></md-input>
-                    <span class="md-error " v-if="newMember.errors.email.empty">
-                      Email is required
-                    </span>
-                    <span class="md-error " v-if="newMember.errors.email.invalid">
-                      Email provided is invalid
-                    </span>
-                    <span class="md-error " v-if="newMember.errors.email.existing">
-                      Email is already registered on this team
-                    </span>
-                  </md-field>
-                </div>
-              </div>
-            </md-card-content>
+              </md-card-content>
 
-            <md-card-actions>
-              <md-button
-                type="submit"
-                class="md-primary"
-                :disabled="newMember.sending"
-              >
-                Add
-              </md-button>
-            </md-card-actions>
-          </form>
-        </md-card>
+              <md-card-actions>
+                <md-button
+                  type="submit"
+                  class="md-primary"
+                  :disabled="newMember.sending"
+                >
+                  Add
+                </md-button>
+              </md-card-actions>
+            </form>
+          </md-card>
 
-        <a
-          id="meeting-link-btn"
-          v-if="team"
-          :href="team.settings.meeting_link"
-          target="_blank"
-          rel="noopener noreferrer"
-          v-show="false"
-        >
-        </a>
+          <a
+            id="meeting-link-btn"
+            v-if="team"
+            :href="team.settings.meeting_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            v-show="false"
+          >
+          </a>
 
-        <md-snackbar
-          md-position="left"
-          :md-duration="2500"
-          :md-active.sync="showCalledTeamSnackbar"
-          md-persistent
-        >
-          <span>Team called successfully!</span>
-        </md-snackbar>
+          <md-snackbar
+            md-position="left"
+            :md-duration="2500"
+            :md-active.sync="showCalledTeamSnackbar"
+            md-persistent
+          >
+            <span>Team called successfully!</span>
+          </md-snackbar>
 
-        <md-snackbar
-          md-position="left"
-          :md-duration="4500"
-          :md-active.sync="showCalledTeamFailedSnackbar"
-          md-persistent
-        >
-          <span>Error: Calling team failed</span>
-        </md-snackbar>
+          <md-snackbar
+            md-position="left"
+            :md-duration="4500"
+            :md-active.sync="showCalledTeamFailedSnackbar"
+            md-persistent
+          >
+            <span>Error: Calling team failed</span>
+          </md-snackbar>
+
+        </div>
+
+        <server-unreachable-snackbar></server-unreachable-snackbar>
 
       </md-app-content>
     </md-app>
@@ -146,10 +151,12 @@
 <script>
 import MemberToDoList from '../components/MemberToDoList.vue';
 import TimerButton from '../components/TimerButton.vue';
+import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
 import { mapState } from 'vuex';
 
 export default {
   components: {
+    'server-unreachable-snackbar': ServerUnreachableSnackbar,
     'member-to-do-list': MemberToDoList,
     'timer-button': TimerButton
   },
