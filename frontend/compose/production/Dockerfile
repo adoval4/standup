@@ -1,9 +1,9 @@
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /code
-COPY package*.json ./
+COPY ./frontend/package*.json ./
 RUN npm install
-COPY . .
+COPY ./frontend/ .
 RUN npm run build
 
 # production stage

@@ -34,3 +34,16 @@ services:
       - ./documentation:/code
     ports:
       - "8001:8001"
+
+  frontend:
+    restart: always
+    image: local-frontend
+    build:
+      context: .
+      dockerfile: ./frontend/compose/local/Dockerfile
+    command: "npm run dev"
+    volumes:
+      - ./frontend:/code
+      - ./frontend/node_modules:/code/node_modules
+    ports:
+      - "8080:8080"
