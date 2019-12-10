@@ -169,4 +169,8 @@ export default {
     opacity: 1;
     transform: translate3d(0, 0px, 0);
 }
+
+.md-layout-item.md-small-size-100 {
+    margin-left: 16px !important;
+}
 </style>
