@@ -109,3 +109,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# production docker compose
+production.yml
