@@ -1,7 +1,42 @@
 FROM python:3.6
 ENV PYTHONUNBUFFERED 1
 
-# django settings module
+# define needed build arguments
+ARG django_secret_key
+ARG postgres_user
+ARG postgres_password
+ARG postgres_host
+ARG postgres_port
+ARG postgres_db
+ARG db_google_instance_name
+ARG django_aws_access_key_id
+ARG django_aws_secret_access_key
+ARG django_aws_storage_bucket_name
+ARG email_host_user
+ARG email_host_password
+
+# envs django
+ENV DJANGO_SECRET_KEY=$django_secret_key
+
+# envs database
+ENV POSTGRES_USER=$postgres_user
+ENV POSTGRES_PASSWORD=$postgres_password
+ENV POSTGRES_HOST=$postgres_host
+ENV POSTGRES_PORT=$postgres_port
+ENV POSTGRES_DB=$postgres_db
+ENV DB_GOOGLE_INSTANCE_NAME=$db_google_instance_name
+ENV DATABASE_URL=postgres://$postgres_user:$postgres_password@$postgres_host:$postgres_port/$postgres_db
+
+# envs aws storage
+ENV DJANGO_AWS_ACCESS_KEY_ID=$django_aws_access_key_id
+ENV DJANGO_AWS_SECRET_ACCESS_KEY=$django_aws_secret_access_key
+ENV DJANGO_AWS_STORAGE_BUCKET_NAME=$django_aws_storage_bucket_name
+
+# envs email
+ENV EMAIL_HOST_USER=$email_host_user
+ENV EMAIL_HOST_PASSWORD=$email_host_password
+
+# envs django settings module
 ENV DJANGO_SETTINGS_MODULE=standup.config
 ENV DJANGO_CONFIGURATION=Production
 

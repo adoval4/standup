@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+
+  api:
+    restart: always
+    image: gcr.io/standup-261414/standup-api:v1.0
+    build:
+      context: .
+      dockerfile: ./api/compose/production/Dockerfile
+      args:
+        django_secret_key: <replace value here>,
+        postgres_user: <replace value here>,
+        postgres_password: <replace value here>,
+        postgres_host: <replace value here>,
+        postgres_port: <replace value here>,
+        postgres_db: <replace value here>,
+        db_google_instance_name: <replace value here>,
+        django_aws_access_key_id: <replace value here>,
+        django_aws_secret_access_key: <replace value here>,
+        django_aws_storage_bucket_name: <replace value here>,
+        email_host_user: <replace value here>,
+        email_host_password: <replace value here>,
+    ports:
+      - "8000:8000"
+
+  documentation:
+    restart: always
+    image: gcr.io/standup-261414/standup-documentation:v1.0
+    build:
+      context: .
+      dockerfile: ./documentation/Dockerfile
+    ports:
+      - "8001:8001"
+
+  frontend:
+    restart: always
+    image: gcr.io/standup-261414/standup-frontend:v1.0
+    build:
+      context: .
+      dockerfile: ./frontend/compose/production/Dockerfile
+    ports:
+      - "80:80"
