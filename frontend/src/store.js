@@ -14,7 +14,7 @@ const store = new Vuex.Store({
       user: null,
       teams: null,
       team: null,
-      isServerRechable: false,
+      isServerRechable: true,
       members: {},
       goals: {}
     }

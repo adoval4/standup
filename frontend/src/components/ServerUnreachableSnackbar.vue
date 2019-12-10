@@ -16,7 +16,7 @@
 export default {
   computed: {
     isServerUnreachable() {
-      return !this.$store.state.isServerRechable;
+      return this.$store.state.isServerRechable === false;
     }
   }
 }
