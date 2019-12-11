@@ -14,6 +14,8 @@ from rest_framework.authtoken.models import Token
 
 # Models
 from standup.utils.models import CustomBaseModel
+from standup.teams.models import Team, Member
+from standup.goals.models import Goal
 
 
 @python_2_unicode_compatible
@@ -33,6 +35,24 @@ class User(AbstractUser):
 
 	def __str__(self):
 		return self.email
+
+	@property
+	def memberships(self):
+		return Member.objects.filter(email=self.email)
+
+	@property
+	def teams(self):
+		team_ids = self.memberships.values_list(
+			'team', flat=True
+		)
+		return Team.objects.filter(pk__in=team_ids).order_by('created')
+
+	@property
+	def pending_goals(self):
+		return Goal.objects.filter(
+			member__email=self.email,
+			is_archived=False
+		).order_by('created')
 
 
 @python_2_unicode_compatible

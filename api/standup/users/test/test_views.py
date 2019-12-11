@@ -16,6 +16,8 @@ from standup.users.models import User
 
 # factories
 from standup.users.test.factories import UserFactory
+from standup.teams.test.factories import TeamFactory, MemberFactory
+from standup.goals.test.factories import GoalFactory
 
 fake = Faker()
 
@@ -44,7 +46,7 @@ class TestUserListTestCase(APITestCase):
 
 class TestUserDetailTestCase(APITestCase):
     """
-    Tests /users detail operations.
+    Tests /users/<id> operations.
     """
 
     def setUp(self):
@@ -64,3 +66,63 @@ class TestUserDetailTestCase(APITestCase):
 
         user = User.objects.get(pk=self.user.id)
         eq_(user.first_name, new_first_name)
+
+
+class TestUserDetailTestCase(APITestCase):
+    """
+    Tests /users/me operations.
+    """
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.other_user = UserFactory()
+        self.url = reverse('user-me')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.user.auth_token}')
+
+        self.team_1 = TeamFactory(
+			name="my team 1, where im a manager",
+			created_by=self.user
+		)
+        self.team_1.managers.add(self.user)
+        self.team_1_membership = MemberFactory(
+            team=self.team_1, email=self.user.email
+        )
+        self.goal_1 = GoalFactory(member=self.team_1_membership)
+
+        self.team_2 = TeamFactory(
+			name="my team 2, where im not a manager",
+			created_by=self.other_user
+		)
+        self.team_2.managers.add(self.other_user)
+        self.team_2_membership = MemberFactory(
+            team=self.team_2, email=self.user.email
+        )
+        self.goal_2 = GoalFactory(member=self.team_2_membership)
+        self.archived_goal = GoalFactory(member=self.team_2_membership, is_archived=True)
+
+
+    def test_get_request_returns_a_given_user(self):
+        response = self.client.get(self.url)
+        eq_(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.json()
+        eq_(response_data.get('id'), self.user.pk)
+        eq_(len(response_data.get('teams')), self.user.memberships.count())
+
+        team_1_data = response_data.get('teams')[0]
+        eq_(team_1_data.get('id'), self.team_1.pk)
+        eq_(team_1_data.get('name'), self.team_1.name)
+        eq_(team_1_data.get('im_manager'), True)
+
+        team_1_pending_goals_data = team_1_data.get('goals')
+        eq_(len(team_1_pending_goals_data), 1)
+        eq_(team_1_pending_goals_data[0].get('id'), self.goal_1.pk)
+
+        team_2_data = response_data.get('teams')[1]
+        eq_(team_2_data.get('id'), self.team_2.pk)
+        eq_(team_2_data.get('name'), self.team_2.name)
+        eq_(team_2_data.get('im_manager'), False)
+
+        team_2_pending_goals_data = team_2_data.get('goals')
+        eq_(len(team_2_pending_goals_data), 1)
+        eq_(team_2_pending_goals_data[0].get('id'), self.goal_2.pk)

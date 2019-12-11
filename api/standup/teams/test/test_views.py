@@ -155,8 +155,6 @@ class TestTeamDetailsTestCase(CustomAPITestCase):
 		)
 		pending_goals = self.member.goals.filter(
 			is_archived=False
-		).exclude(
-			status=Goal.STATUS_DONE
 		)
 		eq_(
 			len(response.data.get('members')[0].get('goals')),

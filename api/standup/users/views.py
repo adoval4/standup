@@ -14,6 +14,8 @@ from standup.users.permissions import IsUserOrReadOnly
 
 # Serializers
 from standup.users.serializers import CreateUserSerializer, UserSerializer
+from standup.teams.serializers import TeamSerializer
+from standup.goals.serializers import GoalSerializer
 
 
 class UserViewSet(mixins.RetrieveModelMixin,
@@ -33,7 +35,19 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
 	@action(detail=False, methods=["get"])
 	def me(self, request, *args, **kwargs):
-		return Response(UserSerializer(request.user).data)
+		user = request.user
+		pending_goals = user.pending_goals
+		user_data = UserSerializer(user).data
+		user_data['teams'] = []
+		for team in user.teams.iterator():
+			team_data = TeamSerializer(team).data
+			team_data['im_manager'] = team.managers.filter(pk=user.pk).exists()
+			pending_goals_in_team = pending_goals.filter(member__team=team)
+			team_data['goals'] = GoalSerializer(
+				pending_goals_in_team, many=True
+			).data
+			user_data['teams'].append(team_data)
+		return Response(user_data)
 
 
 class UserCreateViewSet(mixins.CreateModelMixin,
