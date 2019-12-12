@@ -335,7 +335,6 @@ const store = new Vuex.Store({
     },
 
     updateGoalStatus(context, payload = {}) {
-      if(!context.state.team) { return; }
       if(!payload.memberId) { return; }
       if(!payload.goalId) { return; }
       if(!payload.status) { return; }
@@ -368,7 +367,6 @@ const store = new Vuex.Store({
 
     deleteGoal(context, payload = {}) {
       if(!context.state.user) { return; }
-      if(!context.state.team) { return; }
       if(!payload.memberId) { return; }
       if(!payload.goalId) { return; }
 
@@ -418,7 +416,6 @@ const store = new Vuex.Store({
 
     updateGoalDescription(context, payload = {}) {
       if(!context.state.user) { return; }
-      if(!context.state.team) { return; }
       if(!payload.memberId) { return; }
       if(!payload.goalId) { return; }
       if(!payload.description) { return; }
