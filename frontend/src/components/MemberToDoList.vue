@@ -141,7 +141,6 @@ export default {
 <style lang="scss" scoped>
 
 .md-card.member-card {
-
   margin-top: 1.5em;
   margin-bottom: 2.5em;
 }

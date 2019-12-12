@@ -12,6 +12,7 @@ const store = new Vuex.Store({
   state() {
     return {
       user: null,
+      pendingGoalsByTeam: null,
       teams: null,
       team: null,
       isServerRechable: true,
@@ -69,20 +70,31 @@ const store = new Vuex.Store({
     },
 
     mapTeamMembersAndGoals(state) {
-      if(!state.team) { return; }
-
       state.members = {};
       state.goals = {};
 
-      state.team.members.map((member) => {
-        state.members[member.id] = member;
+      if(state.team) {
+        state.team.members.map((member) => {
+          state.members[member.id] = member;
 
-        if(member.goals) {
-          member.goals.map((goal) => {
-            state.goals[goal.id] = goal;
-          })
-        }
-      })
+          if(member.goals) {
+            member.goals.map((goal) => {
+              state.goals[goal.id] = goal;
+            })
+          }
+        })
+      }
+
+      if(state.pendingGoalsByTeam) {
+        state.pendingGoalsByTeam.map((team) => {
+          if(team.goals) {
+            team.goals.map((goal) => {
+              state.goals[goal.id] = goal;
+            })
+          }
+        })
+      }
+
     },
 
     addTeam(state, payload = {}) {
@@ -167,6 +179,12 @@ const store = new Vuex.Store({
       state.isServerRechable = payload.reachable;
     },
 
+    setMyPendingGoalsByTeam(state, payload = {}) {
+      if(!payload.teams) { return; }
+
+      state.pendingGoalsByTeam = payload.teams;
+    },
+
     logoutUser(state) {
       localStorage.removeItem('authenticatedUser');
       state.user = null;
@@ -174,6 +192,26 @@ const store = new Vuex.Store({
 
   },
   actions: {
+
+    getMyPendingGoalsByTeam(context) {
+      if(!context.state.user) { return; }
+
+      const res = ApiClient.getMyInfo(context.state.user.token);
+
+      res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
+
+        context.commit('setMyPendingGoalsByTeam', {
+          teams: response.data.teams
+        })
+        context.commit('mapTeamMembersAndGoals')
+      }).catch((error) => {
+        console.log(error);
+        context.commit('setServerReachability', { reachable: false })
+      });
+
+      return res;
+    },
 
     getTeams(context) {
       if(!context.state.user) { return; }

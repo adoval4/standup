@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const baseUrl = process.env.API_URL;
 const apiBaseUrl = `${baseUrl}/api/v1`;
+const userListUrl = `${apiBaseUrl}/users/`;
+const myInfoUrl = `${userListUrl}me/`;
 const teamListUrl = `${apiBaseUrl}/teams/`;
 const goalsListUrl = `${apiBaseUrl}/goals/`;
 
@@ -16,6 +18,10 @@ const StandupApiClient = {
   getOptions: function(token) {
     if(!token) { return {} }
     return { headers: { 'Authorization': `Token ${token}` } };
+  },
+
+  getMyInfo: function(token) {
+    return axios.get(myInfoUrl, this.getOptions(token));
   },
 
   getTeams: function(token) {

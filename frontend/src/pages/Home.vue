@@ -26,34 +26,78 @@
         >
         </md-progress-bar>
 
-        <md-list v-if="teams && teams.length > 0">
+        <md-card v-if="pendingGoalsByTeam">
 
-          <md-subheader>My teams</md-subheader>
+          <md-card-header class="md-layout-item">
+            <div class="md-title">My goals</div>
+            <div class="md-subhead"></div>
+          </md-card-header>
 
-          <md-list-item
-            v-for="team in teams"
-            :key="team.id"
-            :to="`/${team.id}`"
-            :md-ripple="false"
-          >
-            <span
-              class="md-list-item-text"
-            >
-              {{ team.name }}
-            </span>
+          <md-card-content >
+            <md-list >
+              <div
+                v-for="_team in pendingGoalsByTeam"
+                :key="_team.id"
+                :md-ripple="false"
+              >
+                <md-subheader>
+                  <router-link :to="`/${_team.id}`">{{ _team.name }}</router-link>
+                </md-subheader>
 
-          </md-list-item>
+                <goal-item
+                  v-for="_goal in _team.goals"
+                  :goalId="_goal.id"
+                  :memberId="_team.membership"
+                  :key="_goal.id"
+                >
+                </goal-item>
 
-          <md-list-item>
-            <md-field>
-              <label>+ Create a new team</label>
-              <md-input
-                v-model="newTeamName"
-                @keyup.enter="createNewGroup"
-              ></md-input>
-            </md-field>
-          </md-list-item>
-        </md-list>
+                <md-list-item v-if="_team.goals.length == 0" class="text-muted">
+                  No pending goals for now
+                </md-list-item>
+
+              </div>
+            </md-list>
+          </md-card-content>
+
+        </md-card>
+
+        <md-card>
+          <md-card-header class="md-layout-item">
+            <div class="md-title"> My teams </div>
+            <div class="md-subhead">Where I'm a manager</div>
+          </md-card-header>
+
+          <md-card-content >
+            <md-list v-if="teams && teams.length > 0">
+              <md-list-item
+                v-for="team in teams"
+                :key="team.id"
+                :to="`/${team.id}`"
+                :md-ripple="false"
+              >
+                <span
+                  class="md-list-item-text"
+                >
+                  {{ team.name }}
+                </span>
+
+              </md-list-item>
+
+              <md-list-item>
+                <md-field>
+                  <label>+ Create a new team</label>
+                  <md-input
+                    v-model="newTeamName"
+                    @keyup.enter="createNewGroup"
+                  ></md-input>
+                </md-field>
+              </md-list-item>
+            </md-list>
+
+          </md-card-content>
+
+        </md-card>
 
         <md-empty-state
           v-if="teams && teams.length == 0"
@@ -76,10 +120,12 @@
 </template>
 
 <script>
+import GoalItem from '../components/GoalItem.vue'
 import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
 
 export default {
   components: {
+    'goal-item': GoalItem,
     'server-unreachable-snackbar': ServerUnreachableSnackbar
   },
   data() {
@@ -90,8 +136,10 @@ export default {
   },
   created() {
     // get teams
-    const res = this.$store.dispatch('getTeams');
-    res.finally(() => { this.loading = false })
+    const res_goals = this.$store.dispatch('getMyPendingGoalsByTeam');
+    res_goals.finally(() => { this.loading = false })
+    const res_teams = this.$store.dispatch('getTeams');
+    res_teams.finally(() => { this.loading = false })
   },
   computed: {
     user: function() {
@@ -99,6 +147,9 @@ export default {
     },
     teams: function() {
       return this.$store.state.teams;
+    },
+    pendingGoalsByTeam: function() {
+      return this.$store.state.pendingGoalsByTeam;
     }
   },
   methods: {
@@ -116,13 +167,18 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 
 #top-progress-bar {
   position: absolute;
   width: 100%;
   left: 0px;
   margin-top: -16px;
+}
+
+.md-card {
+  margin-top: 1.5em;
+  margin-bottom: 2.5em;
 }
 
 </style>

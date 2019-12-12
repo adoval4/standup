@@ -41,6 +41,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
 		user_data['teams'] = []
 		for team in user.teams.iterator():
 			team_data = TeamSerializer(team).data
+			team_data['membership'] = team.members.get(email=user.email).pk
 			team_data['im_manager'] = team.managers.filter(pk=user.pk).exists()
 			pending_goals_in_team = pending_goals.filter(member__team=team)
 			team_data['goals'] = GoalSerializer(
