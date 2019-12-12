@@ -18,7 +18,7 @@ class Production(Common):
     # cors white list
     CORS_ORIGIN_ALLOW_ALL = False
     CORS_ORIGIN_WHITELIST = [
-        "https://api.standup.co",
+        "http://standup.adolfovaldivieso.com",
     ]
 
     # Static files (CSS, JavaScript, Images)
