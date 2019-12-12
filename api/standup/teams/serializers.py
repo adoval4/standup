@@ -31,8 +31,6 @@ class CreateTeamSerializer(serializers.Serializer):
         """
         Validates that user has no team with same name
         """
-        # make name lowercase
-        name = name.lower()
         # check if user has a team with same name
         user = self.context['request'].user
         q = Team.objects.filter(
