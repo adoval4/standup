@@ -1,11 +1,15 @@
 <br/>
 <strong>Today's to do list</strong>
 <br/>
+<br/>
 {% for member in team.active_members.all %}
 {{ member.name }}:
 <br/>
 {% for goal in member.pending_goals.all %}
-- {{ goal.description }}
+- {{ goal.description }} <br/>
 {% endfor %}
 <br/>
 {% endfor %}
+Check it online at <a href="{{ settings.BASE_URL }}/#/{{ team.id }}">{{ settings.BASE_URL }}/#/{{ team.id }}</a>
+<br/>
+<br/>

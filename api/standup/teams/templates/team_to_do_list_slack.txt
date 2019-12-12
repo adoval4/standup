@@ -4,3 +4,5 @@ TO DO LIST
 {% for goal in member.pending_goals.all %}- {{ goal.description }}
 {% endfor %}
 {% endfor %}
+Check it online -> {{ settings.BASE_URL }}/#/{{ team.id }}
+

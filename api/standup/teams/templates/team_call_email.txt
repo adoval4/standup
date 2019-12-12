@@ -1,6 +1,10 @@
 <br/>
 Hey everyone!
 <br/>
-It's time for {{ team.name }} standup!
+<br/>
+It's time for {{ team.name }}'s standup!
+<br/>
 <br/>
 Please, join us{% if team.settings.meeting_link %} here -> <a href="{{ team.settings.meeting_link }}">{{ team.settings.meeting_link }}</a>{% endif %}.
+<br/>
+<br/>
