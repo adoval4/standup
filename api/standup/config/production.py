@@ -3,6 +3,10 @@ from .common import Common
 
 
 class Production(Common):
+    DEBUG = False
+
+    BASE_URL = "http://standup.adolfovaldivieso.com"
+
     INSTALLED_APPS = Common.INSTALLED_APPS
     SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
     # Site
@@ -39,6 +43,7 @@ class Production(Common):
     }
 
     # email
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

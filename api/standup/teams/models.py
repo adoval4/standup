@@ -77,12 +77,12 @@ class Team(CustomUserCreatedBaseModel):
 		if message_type == Team.CALL_MESSAGE:
 			message = render_to_string(
 				'team_call_slack.txt',
-				{'team': self}
+				{'team': self, 'settings': settings}
 			)
 		elif message_type == Team.TO_DO_LIST_MESSAGE:
 			message = render_to_string(
 				'team_to_do_list_slack.txt',
-				{'team': self}
+				{'team': self, 'settings': settings}
 			)
 
 		if message is not None:
@@ -91,18 +91,18 @@ class Team(CustomUserCreatedBaseModel):
 	def send_email(self, message_type):
 		subject = None
 		message = None
+		today = timezone.localtime(timezone.now()).date()
 		if message_type == Team.CALL_MESSAGE:
-			subject = 'It\'s time for your Standup'
+			subject = '{} | It\'s time for out standup ({})'.format(self.name, today)
 			message = render_to_string(
 				'team_call_email.txt',
-				{'team': self}
+				{'team': self, 'settings': settings}
 			)
 		elif message_type == Team.TO_DO_LIST_MESSAGE:
-			now = timezone.localtime(timezone.now()).date()
-			subject = '{} | To do list ({})'.format(self.name, now)
+			subject = '{} | Today\'s to do list ({})'.format(self.name, today)
 			message = render_to_string(
 				'team_to_do_list_email.txt',
-				{'team': self}
+				{'team': self, 'settings': settings}
 			)
 
 		if None not in [ subject, message ]:
