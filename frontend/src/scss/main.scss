@@ -1,9 +1,19 @@
 $red-accent: #ff5252;
 
-body, #app {
-  height: 100%;
-  min-height: 100vh;
-  // color: $app-black;
+body {
+  overflow: hidden;
+}
+
+.md-app.md-fixed .md-app-scroller {
+  overflow: auto;
+  max-height: calc(100vh - 64px);
+}
+
+@media (max-width: 960px) {
+  .md-app.md-fixed .md-app-scroller {
+    overflow: auto;
+    max-height: calc(100vh - 48px);
+  }
 }
 
 .logo {
@@ -16,11 +26,6 @@ body, #app {
 }
 
 $red-accent: #ff5252;
-
-.md-app {
-  min-height: 100vh;
-  height: 100%;
-}
 
 .md-error {
   color: $red-accent;

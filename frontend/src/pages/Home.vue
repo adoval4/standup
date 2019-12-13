@@ -18,7 +18,7 @@
 
       </md-app-toolbar>
 
-      <md-app-content >
+      <md-app-content class="md-scrollbar" >
         <md-progress-bar
           id="top-progress-bar"
           md-mode="indeterminate"
