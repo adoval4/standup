@@ -4,7 +4,7 @@ services:
 
   api:
     restart: always
-    image: gcr.io/<your google proyect id here>/standup-api
+    image: api
     build:
       context: .
       dockerfile: ./api/compose/production/Dockerfile
@@ -26,7 +26,7 @@ services:
 
   documentation:
     restart: always
-    image: gcr.io/<your google proyect id here>/standup-documentation
+    image: documentation
     build:
       context: .
       dockerfile: ./documentation/Dockerfile
@@ -35,7 +35,7 @@ services:
 
   frontend:
     restart: always
-    image: gcr.io/<your google proyect id here>/standup-frontend
+    image: frontend
     build:
       context: .
       dockerfile: ./frontend/compose/production/Dockerfile
