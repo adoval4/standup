@@ -264,15 +264,25 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 			name="my team",
 			created_by=self.user
 		)
-
 		self.member = Member.objects.create(
 			name=fake.first_name(),
 			email=fake.email(),
+			created_by=self.user,
+			team=self.team
+		)
+		self.member_with_user = Member.objects.create(
+			name=self.user.first_name,
+			email=self.user.email,
+			created_by=self.user,
 			team=self.team
 		)
 		self.team_member_url = reverse('team_member-detail', kwargs={
 			'team_id': self.team.id,
 			'pk': self.member.id,
+		})
+		self.team_member_with_user_url = reverse('team_member-detail', kwargs={
+			'team_id': self.team.id,
+			'pk': self.member_with_user.id,
 		})
 
 	def test_delete_request_with_valid_data_succeeds(self):
@@ -283,14 +293,26 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 		member = Member.objects.get(pk=self.member.pk)
 		eq_(member.is_archived, True)
 
-	def test_retrieve_request_succeeds(self):
+	def test_retrieve_request_for_member_without_user_succeeds(self):
 		response = self.client.get(
 			self.team_member_url, **self.auth_header
 		)
 		eq_(response.status_code, status.HTTP_200_OK)
-		member = Member.objects.get(pk=self.member.pk)
-		eq_(member.email, self.member.email)
-		eq_(str(member.team.pk), self.member.team.pk)
+		member = Member.objects.get(pk=response.data.get('id'))
+		eq_(member.email, response.data.get('email'))
+		eq_(str(member.created_by.pk), response.data.get('created_by').get('id'))
+		eq_(member.user, response.data.get('user'))
+
+	def test_retrieve_request_for_member_with_user_succeeds(self):
+		response = self.client.get(
+			self.team_member_with_user_url, **self.auth_header
+		)
+		eq_(response.status_code, status.HTTP_200_OK)
+		member = Member.objects.get(pk=response.data.get('id'))
+		eq_(member.email, response.data.get('email'))
+		eq_(member.email, response.data.get('email'))
+		eq_(str(member.created_by.pk), response.data.get('created_by').get('id'))
+		eq_(member.user.pk, response.data.get('user'))
 
 
 class TestTeamSettingsTestCase(CustomAPITestCase):

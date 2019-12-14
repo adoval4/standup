@@ -29,6 +29,7 @@ from standup.teams.serializers import (
 	TeamSettingsSerializer,
 	TeamManagerSerializer
 )
+from standup.users.serializers import UserSerializer
 from standup.goals.serializers import GoalSerializer
 
 
@@ -187,6 +188,23 @@ class TeamMemberViewSet(
 			MemberSerializer(member).data,
 			status=status.HTTP_201_CREATED
 		)
+
+	def retrieve(self, request, *args, **kwargs):
+		"""
+		Retrieves member info but appends extra info such as if the member's
+		email already has a user.
+		"""
+		response = super(TeamMemberViewSet, self).retrieve(
+			request, *args, **kwargs
+		)
+		member = self.get_object()
+		member_user = member.user
+		data = response.data
+		data['created_by'] = UserSerializer(member.created_by).data
+		data['user'] = None
+		if member_user:
+			data['user'] = member_user.pk
+		return Response(data)
 
 	def destroy(self, request, *args, **kwargs):
 		"""

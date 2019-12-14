@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 # Models
 from standup.utils.models import CustomUserCreatedBaseModel
@@ -192,6 +193,17 @@ class Member(CustomUserCreatedBaseModel):
 			settings.SECRET_KEY,
 			algorithm='HS256'
 		).decode('utf-8')
+
+	@property
+	def user(self):
+		"""
+		Return's the associated user (with the same email)
+		"""
+		from standup.users.models import User
+		try:
+			return User.objects.get(email=self.email)
+		except ObjectDoesNotExist:
+			return None
 
 	@staticmethod
 	def get_member_from_token(token):
