@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# Build and deploy
+# ================
+#
+# This script can be used for building and deploying an image update to a google
+# kubernetes engine
+#
+# Usage:
+# $ bash build_and_deploy.sh [SERVICE-NAME] [VERSION-TAG]
+# 
+
 # check for env variable GOOGLE_PROJECT_ID
 if [ ! $GOOGLE_PROJECT_ID ]
 then
