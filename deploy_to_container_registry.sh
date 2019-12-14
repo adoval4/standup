@@ -7,6 +7,9 @@ then
   exit
 fi
 
+# get google credentials
+gcloud container clusters get-credentials standard-cluster-1 --zone us-central1-a --project $GOOGLE_PROJECT_ID
+
 # check for service name
 SERVICE=$1
 if [ ! $SERVICE ]
