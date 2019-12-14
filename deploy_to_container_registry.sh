@@ -38,7 +38,7 @@ echo ""
 echo "TAG"
 echo ""
 FINAL_CONTAINER_NAME=gcr.io/$GOOGLE_PROJECT_ID/standup-$SERVICE:$VERSION
-docker tag $SERVICE:lastest $FINAL_CONTAINER_NAME
+docker tag $SERVICE:latest $FINAL_CONTAINER_NAME
 
 # push to container registry
 echo "--------------------"
@@ -46,3 +46,10 @@ echo ""
 echo "PUSH TO REGISTRY"
 echo ""
 docker push $FINAL_CONTAINER_NAME
+
+# push to container registry
+echo "--------------------"
+echo ""
+echo "PUSH TO REGISTRY"
+echo ""
+kubectl set image deployment standup-$SERVICE=$FINAL_CONTAINER_NAME
