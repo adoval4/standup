@@ -15,7 +15,7 @@ from standup.goals.models import Goal
 
 # Permissions
 from standup.teams.permissions import (
-	IsTeamManager, 
+	IsTeamManager,
 	IsTeamCreator,
 	IsTeamManagerOfObject
 )
@@ -144,7 +144,9 @@ class TeamViewSet(mixins.RetrieveModelMixin,
 		return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
-class TeamMemberViewSet(viewsets.GenericViewSet):
+class TeamMemberViewSet(
+	mixins.RetrieveModelMixin,
+	viewsets.GenericViewSet):
 	"""
 	Creates and archives team members of a team
 	"""
@@ -161,7 +163,7 @@ class TeamMemberViewSet(viewsets.GenericViewSet):
 		return self.team.members.filter(is_archived=False)
 
 	def get_permissions(self):
-		permissions = []
+		permissions = [ AllowAny ]
 		if self.action in ['update', 'partial_update', 'create']:
 			permissions += [IsAuthenticated, IsTeamManager]
 		return [p() for p in permissions]

@@ -225,16 +225,6 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 			'email': fake.email()
 		}
 
-		self.member = Member.objects.create(
-			name=fake.first_name(),
-			email=fake.email(),
-			team=self.team
-		)
-		self.team_member_url = reverse('team_member-detail', kwargs={
-			'team_id': self.team.id,
-			'pk': self.member.id,
-		})
-
 	def test_post_request_with_no_data_fails(self):
 		response = self.client.post(self.team_url, {}, **self.auth_header)
 		eq_(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -262,13 +252,45 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 		eq_(member.created_by.email, self.user.email)
 		eq_(member.team.name, self.team.name)
 
-	def test_post_request_with_valid_data_succeeds(self):
+
+class TestTeamMemberListTestCase(CustomAPITestCase):
+	"""
+	Tests /teams/<team_id>/members/<pk>/  operations.
+	"""
+	def setUp(self):
+		super().setUp()
+
+		self.team = TeamFactory(
+			name="my team",
+			created_by=self.user
+		)
+
+		self.member = Member.objects.create(
+			name=fake.first_name(),
+			email=fake.email(),
+			team=self.team
+		)
+		self.team_member_url = reverse('team_member-detail', kwargs={
+			'team_id': self.team.id,
+			'pk': self.member.id,
+		})
+
+	def test_delete_request_with_valid_data_succeeds(self):
 		response = self.client.delete(
 			self.team_member_url, **self.auth_header
 		)
 		eq_(response.status_code, status.HTTP_204_NO_CONTENT)
 		member = Member.objects.get(pk=self.member.pk)
 		eq_(member.is_archived, True)
+
+	def test_retrieve_request_succeeds(self):
+		response = self.client.get(
+			self.team_member_url, **self.auth_header
+		)
+		eq_(response.status_code, status.HTTP_200_OK)
+		member = Member.objects.get(pk=self.member.pk)
+		eq_(member.email, self.member.email)
+		eq_(str(member.team.pk), self.member.team.pk)
 
 
 class TestTeamSettingsTestCase(CustomAPITestCase):
