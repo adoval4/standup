@@ -31,25 +31,22 @@ echo ""
 echo "BUILD"
 echo ""
 docker-compose -f production.yml build $SERVICE
-
 # tag version
-echo "--------------------"
-echo ""
-echo "TAG"
-echo ""
-FINAL_CONTAINER_NAME=gcr.io/$GOOGLE_PROJECT_ID/standup-$SERVICE:$VERSION
-docker tag $SERVICE:latest $FINAL_CONTAINER_NAME
+FINAL_IMAGE_NAME=gcr.io/$GOOGLE_PROJECT_ID/standup-$SERVICE:$VERSION
+docker tag $SERVICE:latest $FINAL_IMAGE_NAME
 
 # push to container registry
 echo "--------------------"
 echo ""
 echo "PUSH TO REGISTRY"
 echo ""
-docker push $FINAL_CONTAINER_NAME
+docker push $FINAL_IMAGE_NAME
 
 # push to container registry
 echo "--------------------"
 echo ""
-echo "PUSH TO REGISTRY"
+echo "UPDATE DEPLOYMENT CONTAINER IMAGE"
 echo ""
-kubectl set image deployment standup-$SERVICE=$FINAL_CONTAINER_NAME
+DEPLOYMENT=deployments/standup-$SERVICE
+CONTAINER_NAME=standup-$SERVICE-sha256
+kubectl set image $DEPLOYMENT $CONTAINER_NAME=$FINAL_IMAGE_NAME
