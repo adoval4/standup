@@ -20,6 +20,8 @@ class Command(BaseCommand):
             first_name=first_name,
             last_name=last_name,
         )
+        user.is_staff = True
+        user.is_superuser = True
         user.set_password(password)
         user.save()
 
