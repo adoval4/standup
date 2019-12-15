@@ -96,6 +96,17 @@ const StandupApiClient = {
     return axios.delete(teamArchiveDonelUrl, this.getOptions(token));
   },
 
+  getTeamMember: function(teamId, teamMemberId) {
+    const teamMemberDetaillUrl = `${teamListUrl}${teamId}/members/${teamMemberId}/`;
+    return axios.get(teamMemberDetaillUrl);
+  },
+
+  createUser: function(email, first_name, last_name, password) {
+    return axios.post(userListUrl, {
+      email, first_name, last_name, password
+    })
+  },
+
   callTeam: function(token, teamId) {
     const teamCalllUrl = `${teamListUrl}${teamId}/call/`;
     return axios.get(teamCalllUrl, this.getOptions(token));

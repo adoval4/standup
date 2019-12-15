@@ -511,6 +511,47 @@ const store = new Vuex.Store({
       return res;
     },
 
+    getTeamMember(context, payload = {}) {
+      if(!payload.teamId) { return; }
+      if(!payload.teamMemberId) { return; }
+
+      const res = ApiClient.getTeamMember(
+        payload.teamId,
+        payload.teamMemberId
+      );
+
+      res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
+      }).catch((error) => {
+        console.log(error);
+        context.commit('setServerReachability', { reachable: false })
+      });
+      return res;
+    },
+
+    createUser(context, payload = {}) {
+      console.log(payload)
+      if(!payload.email) { return; }
+      if(!payload.first_name) { return; }
+      if(!payload.last_name) { return; }
+      if(!payload.password) { return; }
+
+      const res = ApiClient.createUser(
+        payload.email,
+        payload.first_name,
+        payload.last_name,
+        payload.password
+      );
+
+      res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
+      }).catch((error) => {
+        console.log(error);
+        context.commit('setServerReachability', { reachable: false })
+      });
+      return res;
+    },
+
     callTeam(context) {
       if(!context.state.user) { return; }
       if(!context.state.team) { return; }

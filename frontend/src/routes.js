@@ -56,7 +56,7 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
-    path: '/member-signup/:teamMemberId/',
+    path: '/:teamId/:teamMemberId/signup/',
     component: TeamMemberRegistration,
     name: 'TeamMemberRegistration'
   },
