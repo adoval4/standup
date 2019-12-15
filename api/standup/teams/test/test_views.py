@@ -300,6 +300,8 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 		eq_(response.status_code, status.HTTP_200_OK)
 		member = Member.objects.get(pk=response.data.get('id'))
 		eq_(member.email, response.data.get('email'))
+		eq_(str(member.team.pk), response.data.get('team').get('id'))
+		eq_(member.team.name, response.data.get('team').get('name'))
 		eq_(str(member.created_by.pk), response.data.get('created_by').get('id'))
 		eq_(member.user, response.data.get('user'))
 
@@ -310,7 +312,8 @@ class TestTeamMemberListTestCase(CustomAPITestCase):
 		eq_(response.status_code, status.HTTP_200_OK)
 		member = Member.objects.get(pk=response.data.get('id'))
 		eq_(member.email, response.data.get('email'))
-		eq_(member.email, response.data.get('email'))
+		eq_(str(member.team.pk), response.data.get('team').get('id'))
+		eq_(member.team.name, response.data.get('team').get('name'))
 		eq_(str(member.created_by.pk), response.data.get('created_by').get('id'))
 		eq_(member.user.pk, response.data.get('user'))
 

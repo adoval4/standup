@@ -200,6 +200,7 @@ class TeamMemberViewSet(
 		member = self.get_object()
 		member_user = member.user
 		data = response.data
+		data['team'] = TeamSerializer(member.team).data
 		data['created_by'] = UserSerializer(member.created_by).data
 		data['user'] = None
 		if member_user:
