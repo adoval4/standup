@@ -4,6 +4,10 @@ body {
   overflow: hidden;
 }
 
+#app {
+  min-height: 100vh;
+}
+
 .md-app.md-fixed .md-app-scroller {
   overflow: auto;
   max-height: calc(100vh - 64px);
