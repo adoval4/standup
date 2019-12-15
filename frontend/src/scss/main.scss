@@ -4,8 +4,12 @@ body {
   overflow: hidden;
 }
 
-#app {
+#app, .page-container, .md-app {
   min-height: 100vh;
+}
+
+.page-container {
+    min-height: 100vh;
 }
 
 .md-app.md-fixed .md-app-scroller {
@@ -99,5 +103,7 @@ $green-done: #2AC940;
     transform: translate3d(0, 0px, 0);
 }
 
-
+.text-center {
+  text-align: center;
+}
 
