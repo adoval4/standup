@@ -2,6 +2,7 @@ import Home from './pages/Home.vue';
 import Team from './pages/Team.vue';
 import TeamSettings from './pages/TeamSettings.vue';
 import Login from './pages/Login.vue';
+import TeamMemberRegistration from './pages/TeamMemberRegistration.vue';
 
 import store from './store.js';
 
@@ -53,7 +54,12 @@ const routes = [
     component: TeamSettings,
     name: 'teamSettings',
     beforeEnter: ifAuthenticated
-  }
+  },
+  {
+    path: '/member-signup/:teamMemberId/',
+    component: TeamMemberRegistration,
+    name: 'TeamMemberRegistration'
+  },
 ];
 
 export default routes;
