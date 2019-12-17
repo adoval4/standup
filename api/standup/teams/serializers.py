@@ -5,6 +5,10 @@ from rest_framework import serializers
 from standup.users.models import User
 from standup.teams.models import Team, Member, TeamSettings
 
+# Serializers
+from standup.users.serializers import UserSerializer
+
+
 
 class TeamSerializer(serializers.ModelSerializer):
 
@@ -64,10 +68,18 @@ class TeamSettingsSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.ModelSerializer):
 
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Member
-        fields = ('id', 'name', 'email', 'is_verified')
-        read_only_fields = ('email', )
+        fields = ('id', 'name', 'email', 'is_verified', 'user')
+        read_only_fields = ('email', 'user')
+
+    def get_user(self, obj):
+        member_user = obj.user
+        if member_user is None:
+            return None
+        return UserSerializer(obj.user).data
 
 
 class CreateTeamMemberSerializer(serializers.Serializer):
