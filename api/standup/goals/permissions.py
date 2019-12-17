@@ -34,11 +34,7 @@ class IsTeamManagerOrItsMemberGoal(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if self.is_team_manager(request, obj):
             return True
-<<<<<<< HEAD
-		# if goal's member user is the same as the one making the request 
-=======
-
->>>>>>> 6d08a2872bfda6a26ae5f3e6156318bfc14d9e48
+		# if goal's member user is the same as the one making the request
         return obj.member.user == request.user
 
 
