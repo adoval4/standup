@@ -184,6 +184,7 @@ class TeamMemberViewSet(
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)
 		member = serializer.save()
+		member.send_added_to_team_email()
 		return Response(
 			MemberSerializer(member).data,
 			status=status.HTTP_201_CREATED
@@ -216,6 +217,14 @@ class TeamMemberViewSet(
 		member.save()
 		return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+	@action(detail=True, methods=['post'])
+	def resend(self, request, *args, **kwargs):
+		member = self.get_object()
+		member.send_added_to_team_email()
+		return Response(
+			None,
+			status=status.HTTP_200_OK
+		)
 
 
 
