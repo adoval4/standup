@@ -231,6 +231,25 @@ class Member(CustomUserCreatedBaseModel):
 	def pending_goals(self):
 		return self.goals.filter(is_archived=False).order_by('created')
 
+	def send_added_to_team_email(self):
+		"""
+		Sends an email to member when added to a team. Includes a link for
+		the member to create a user if he/she still hasn't.
+		"""
+		today = timezone.localtime(timezone.now()).date()
+		subject = '{} {} just added you to {} ({})'.format(
+			self.created_by.first_name,
+			self.created_by.last_name,
+			self.team.name,
+			today
+		)
+		message = render_to_string(
+			'member_added_email.txt',
+			{'member': self, 'settings': settings}
+		)
+		send_mail(
+			subject, message, [self.email], is_html=True
+		)
 
 @receiver(post_save, sender=Team)
 def create_team_settings(sender, instance=None, created=False, **kwargs):

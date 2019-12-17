@@ -1,0 +1,23 @@
+<br/>
+Hey {{ member.name }}!
+<br/>
+<br/>
+{{ member.created_by.first_name }} {{ member.created_by.last_name }} added you to {{ member.team.name }}, this is a team at Standup.
+<br/>
+<br/>
+Standup is a platform for setting and keeping track of the goals of your team.
+<br/>
+<br/>
+{% if member.user is None %}
+To continue, please register:
+<br/>
+<a href="{{ settings.BASE_URL }}/#/{{ member.team.id }}/{{ member.id }}/signup">{{ settings.BASE_URL }}/#/{{ member.team.id }}/{{ member.id }}/signup</a>
+{% else %}
+Visit your team:
+<br/>
+<a href="{{ settings.BASE_URL }}/#/{{ member.team.id }}">{{ settings.BASE_URL }}/#/{{ member.team.id }}</a>
+{% endif %}
+<br/>
+<br/>
+Best!<br/>
+Standup Team
