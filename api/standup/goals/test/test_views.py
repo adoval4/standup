@@ -194,39 +194,3 @@ class TestGoalDetailTestCase(BaseTestGoalTestCase):
 		goal = Goal.objects.get(pk=self.goal.pk)
 		eq_(goal.status, Goal.STATUS_NOT_DONE)
 		ok_(goal.set_not_done_at is not None)
-
-	def test_partial_update_status_done_as_member_request_succeeds(self):
-		response = self.client.patch(
-			self.url_as_member,
-			{
-				'status': Goal.STATUS_DONE
-			}
-		)
-		eq_(response.status_code, status.HTTP_200_OK)
-		goal = Goal.objects.get(pk=self.goal.pk)
-		eq_(goal.status, Goal.STATUS_DONE)
-		ok_(goal.set_done_at is not None)
-
-	def test_partial_update_status_in_progress_as_member_request_succeeds(self):
-		response = self.client.patch(
-			self.url_as_member,
-			{
-				'status': Goal.STATUS_IN_PROGRESS
-			}
-		)
-		eq_(response.status_code, status.HTTP_200_OK)
-		goal = Goal.objects.get(pk=self.goal.pk)
-		eq_(goal.status, Goal.STATUS_IN_PROGRESS)
-		ok_(goal.set_in_progress_at is not None)
-
-	def test_partial_update_status_not_done_as_member_request_succeeds(self):
-		response = self.client.patch(
-			self.url_as_member,
-			{
-				'status': Goal.STATUS_NOT_DONE
-			}
-		)
-		eq_(response.status_code, status.HTTP_200_OK)
-		goal = Goal.objects.get(pk=self.goal.pk)
-		eq_(goal.status, Goal.STATUS_NOT_DONE)
-		ok_(goal.set_not_done_at is not None)
