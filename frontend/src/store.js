@@ -530,7 +530,6 @@ const store = new Vuex.Store({
     },
 
     createUser(context, payload = {}) {
-      console.log(payload)
       if(!payload.email) { return; }
       if(!payload.first_name) { return; }
       if(!payload.last_name) { return; }
@@ -559,6 +558,28 @@ const store = new Vuex.Store({
       const res = ApiClient.callTeam(
         context.state.user.token,
         context.state.team.id
+      );
+
+      res.then((response) => {
+        context.commit('setServerReachability', { reachable: true })
+      }).catch((error) => {
+        console.log(error);
+        context.commit('setServerReachability', { reachable: false })
+      });
+
+      return res;
+    },
+
+    resendMemberInvitation(context, payload = {}) {
+      console.log(payload);
+      if(!context.state.user) { return; }
+      if(!payload.teamId) { return; }
+      if(!payload.teamMemberId) { return; }
+
+      const res = ApiClient.resendMemberInvitation(
+        context.state.user.token,
+        payload.teamId,
+        payload.teamMemberId
       );
 
       res.then((response) => {

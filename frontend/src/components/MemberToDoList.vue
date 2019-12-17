@@ -12,7 +12,13 @@
 
       <div class="md-layout">
         <md-card-header class="md-layout-item">
-          <div class="md-title">{{ member.name }}</div>
+          <div class="md-title">
+            {{ member.name }}
+            <span v-if="!member.user">
+              <md-icon class="md-accent">warning</md-icon>
+              <md-tooltip md-direction="top">Hasn't registered yet!</md-tooltip>
+            </span>
+          </div>
           <div class="md-subhead">{{ member.email }}</div>
         </md-card-header>
 
@@ -20,6 +26,12 @@
           v-if="isTeamManager"
           class="md-layout-item"
         >
+          <md-button
+            v-if="!member.user"
+            @click="resendInvitationEmail"
+          >
+            Reenviar invitación
+          </md-button>
           <md-button
             class="md-icon-button"
             @click="showDeleteConfirmation = true"
@@ -91,6 +103,15 @@
       @md-confirm="showDeleteConfirmation = false"
     />
 
+    <md-snackbar
+      md-position="left"
+      :md-duration="4500"
+      :md-active.sync="showResendInvitationSnackbar"
+      md-persistent
+    >
+      <span>Invitation sent!</span>
+    </md-snackbar>
+
   </div>
 
 </template>
@@ -112,10 +133,12 @@ export default {
         sending: false
       },
       showDeleteConfirmation: false,
+      showResendInvitationSnackbar: false
     }
   },
   computed: {
     isTeamManager() { return this.$store.getters.isUserTeamManager },
+    team() { return this.$store.state.team },
   },
   methods: {
     createNewGoal() {
@@ -133,6 +156,16 @@ export default {
       this.$store.dispatch('deleteMember', {
         memberId: this.member.id
       });
+    },
+    resendInvitationEmail() {
+      const res = this.$store.dispatch('resendMemberInvitation', {
+        teamId: this.team.id,
+        teamMemberId: this.member.id
+      });
+
+      res.then(() => {
+        this.showResendInvitationSnackbar = true;
+      })
     }
   }
 }

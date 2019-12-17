@@ -111,6 +111,11 @@ const StandupApiClient = {
     const teamCalllUrl = `${teamListUrl}${teamId}/call/`;
     return axios.get(teamCalllUrl, this.getOptions(token));
   },
+
+  resendMemberInvitation: function(token, teamId, teamMemberId) {
+    const teamMemberResendlUrl = `${teamListUrl}${teamId}/members/${teamMemberId}/resend/`;
+    return axios.post(teamMemberResendlUrl, {}, this.getOptions(token));
+  }
 }
 
 export default StandupApiClient;
