@@ -13,3 +13,5 @@
 Check it online at <a href="{{ settings.BASE_URL }}/#/{{ team.id }}">{{ settings.BASE_URL }}/#/{{ team.id }}</a>
 <br/>
 <br/>
+Best!<br/>
+Standup Team
