@@ -47,7 +47,8 @@ const routes = [
   {
     path: '/:teamId',
     component: Team,
-    name: 'team'
+    name: 'team',
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/:teamId/settings',
