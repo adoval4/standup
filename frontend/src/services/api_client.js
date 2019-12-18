@@ -115,7 +115,24 @@ const StandupApiClient = {
   resendMemberInvitation: function(token, teamId, teamMemberId) {
     const teamMemberResendlUrl = `${teamListUrl}${teamId}/members/${teamMemberId}/resend/`;
     return axios.post(teamMemberResendlUrl, {}, this.getOptions(token));
-  }
+  },
+
+  acceptMembership: function(token, teamId, teamMemberId) {
+    const teamMemberDetaillUrl = `${teamListUrl}${teamId}/members/${teamMemberId}/`;
+    return axios.put(
+      teamMemberResendlUrl,
+      { is_verified: true },
+      this.getOptions(token)
+    );
+  },
+
+  declineMembership: function(token, teamId, teamMemberId) {
+    const teamMemberDetaillUrl = `${teamListUrl}${teamId}/members/${teamMemberId}/`;
+    return axios.delete(
+      teamMemberResendlUrl,
+      this.getOptions(token)
+    );
+  },
 }
 
 export default StandupApiClient;

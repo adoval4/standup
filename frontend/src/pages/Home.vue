@@ -26,6 +26,23 @@
         >
         </md-progress-bar>
 
+        <md-card >
+
+          <md-card-header class="md-layout-item">
+            <div class="md-title">Pending invitations</div>
+            <div class="md-subhead"></div>
+          </md-card-header>
+
+          <md-card-content >
+            <md-list >
+              <invitation >
+              </invitation >
+
+            </md-list>
+
+          </md-card-content>
+        </md-card>
+
         <md-card v-if="pendingGoalsByTeam">
 
           <md-card-header class="md-layout-item">
@@ -121,11 +138,13 @@
 
 <script>
 import GoalItem from '../components/GoalItem.vue'
+import Invitation from '../components/Invitation.vue'
 import ServerUnreachableSnackbar from '../components/ServerUnreachableSnackbar.vue';
 
 export default {
   components: {
     'goal-item': GoalItem,
+    'invitation': Invitation,
     'server-unreachable-snackbar': ServerUnreachableSnackbar
   },
   data() {
