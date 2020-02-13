@@ -571,7 +571,6 @@ const store = new Vuex.Store({
     },
 
     resendMemberInvitation(context, payload = {}) {
-      console.log(payload);
       if(!context.state.user) { return; }
       if(!payload.teamId) { return; }
       if(!payload.teamMemberId) { return; }
@@ -591,7 +590,50 @@ const store = new Vuex.Store({
 
       return res;
     }
-  }
+  },
+
+  acceptMembership(context, payload = {}) {
+    if(!context.state.user) { return; }
+    if(!payload.teamId) { return; }
+    if(!payload.teamMemberId) { return; }
+
+    const res = ApiClient.acceptMembership(
+      context.state.user.token,
+      payload.teamId,
+      payload.teamMemberId
+    );
+
+    res.then((response) => {
+      context.commit('setServerReachability', { reachable: true })
+    }).catch((error) => {
+      console.log(error);
+      context.commit('setServerReachability', { reachable: false })
+    });
+
+    return res;
+  },
+
+  declineMembership(context, payload = {}) {
+    if(!context.state.user) { return; }
+    if(!payload.teamId) { return; }
+    if(!payload.teamMemberId) { return; }
+
+    const res = ApiClient.declineMembership(
+      context.state.user.token,
+      payload.teamId,
+      payload.teamMemberId
+    );
+
+    res.then((response) => {
+      context.commit('setServerReachability', { reachable: true })
+    }).catch((error) => {
+      console.log(error);
+      context.commit('setServerReachability', { reachable: false })
+    });
+
+    return res;
+  },
+
 });
 
 export default store;

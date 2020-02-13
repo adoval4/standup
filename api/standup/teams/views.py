@@ -164,9 +164,9 @@ class TeamMemberViewSet(
 		return self.team.members.filter(is_archived=False)
 
 	def get_permissions(self):
-		permissions = [ IsAuthenticated ]
-		if self.action in [ 'create' ]:
-			permissions += [ IsTeamManager ]
+		permissions = [ AllowAny ]
+		if self.action in ['update', 'partial_update', 'create']:
+			permissions += [IsAuthenticated, IsTeamManager]
 		return [p() for p in permissions]
 
 	def get_serializer_class(self):
