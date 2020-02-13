@@ -187,11 +187,16 @@ export default {
     isTeamManager() { return this.$store.getters.isUserTeamManager },
   },
   created() {
-    this.$store.dispatch('getTeam', {
-      teamId: this.$route.params.teamId
-    });
+    // get team info each 15 secs
+    this.loadData()
+    setInterval(() => { this.loadData(); }, 15000);
   },
   methods: {
+    loadData: function() {
+      this.$store.dispatch('getTeam', {
+        teamId: this.$route.params.teamId
+      });
+    },
     createNewMember() {
       if(!this.validateNewMember()) { return; }
 

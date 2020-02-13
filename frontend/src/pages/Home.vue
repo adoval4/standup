@@ -135,11 +135,9 @@ export default {
     }
   },
   created() {
-    // get teams
-    const res_goals = this.$store.dispatch('getMyPendingGoalsByTeam');
-    res_goals.finally(() => { this.loading = false })
-    const res_teams = this.$store.dispatch('getTeams');
-    res_teams.finally(() => { this.loading = false })
+    // get my pendign goals & teams each hour
+    this.loadData()
+    setInterval(() => { this.loadData() }, 60 * 60 * 1000);
   },
   computed: {
     user: function() {
@@ -153,6 +151,12 @@ export default {
     }
   },
   methods: {
+    loadData: function(){
+      const res_goals = this.$store.dispatch('getMyPendingGoalsByTeam');
+      res_goals.finally(() => { this.loading = false })
+      const res_teams = this.$store.dispatch('getTeams');
+      res_teams.finally(() => { this.loading = false })
+    },
     logoutUser: function() {
       this.$store.commit('logoutUser');
       this.$router.push('/login');
