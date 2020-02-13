@@ -53,6 +53,7 @@ export default {
       time_passed_ms: 0,
       wasStarted: false,
       finished: false,
+      time_since_finished_ms: 0,
       running: false,
       interval_ms: 20,
       showFinishedSnackbar: false
@@ -85,9 +86,24 @@ export default {
       if(this.running) {
         this.time_passed_ms += this.interval_ms;
       }
+
+      if(this.finished) {
+        this.time_since_finished_ms += this.interval_ms;
+
+        // if more than 1 min have passed since finished, reset clock
+        if(this.time_since_finished_ms > 60 * 1000) {
+          this.reset()
+        }
+      }
     }, this.interval_ms);
   },
   methods: {
+    reset: function() {
+      this.time_passed_ms = 0
+      this.wasStarted = false
+      this.finished = false
+      this.running = false
+    },
     timerToggle: function() {
       this.wasStarted = true;
       this.running = !this.running;
